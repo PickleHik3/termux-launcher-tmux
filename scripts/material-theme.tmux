@@ -51,14 +51,14 @@ tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${widget_pill_bg},bg
 tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${surface}]#[fg=${prefix_fg},bg=${prefix_bg},bold] PRFX #[fg=${prefix_bg},bg=${surface}] "
 tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${surface}]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${surface}] "
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
-tmux set-option -g status-right "#(kew-tmux-status)#[fg=${secondary},bg=${surface}]#{?window_zoomed_flag,ZOOM ,}#[fg=${widget_pill_bg},bg=${surface}]#[range=user|btop,fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[range=none]#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[range=user|btop,fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')#[range=none]#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${tertiary},bg=${widget_pill_bg}]#(launcher-weather-widget | tr -d '\n')#[fg=${widget_pill_bg},bg=${surface}] "
+tmux set-option -g status-right "#(kew-tmux-status)#[fg=${secondary},bg=${surface}]#{?window_zoomed_flag,ZOOM ,}#[fg=${widget_pill_bg},bg=${surface}]#[range=user|mini-btop,fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[range=none]#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[range=user|mini-btop,fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')#[range=none]#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${tertiary},bg=${widget_pill_bg}]#(launcher-weather-widget | tr -d '\n')#[fg=${widget_pill_bg},bg=${surface}] "
 tmux set-option -g status-format[0] "#[align=left,bg=${surface}]#{T:status-left}#[fg=${cwd_color},bg=${surface},nobold]#{=/36/...:#{s|${HOME}|~|:pane_current_path}}#[align=right,bg=${surface}]#{T:status-right}"
 tmux set-option -g status-format[1] "#[align=centre,bg=${surface}]#{W:#{T:window-status-format},#{T:window-status-current-format}}"
 tmux set-option -gu status-format[2]
 tmux set-option -g status 2
 tmux set-option status 2
 
-tmux bind-key -n MouseDown1Status run-shell 'case "#{mouse_status_range}" in btop) command -v mini-btop-shizuku >/dev/null 2>&1 && tmux new-window -n btop "mini-btop-shizuku" || tmux display-message "Run ~/setup-btop-rish first" ;; esac'
+tmux bind-key -n MouseDown1Status run-shell 'case "#{mouse_status_range}" in mini-btop|btop) command -v mini-btop-shizuku >/dev/null 2>&1 || { tmux display-message "Run ~/setup-btop-rish first"; exit 0; }; tmux select-window -t :=btop 2>/dev/null || tmux new-window -n btop "mini-btop-shizuku" ;; esac'
 
 tmux set-window-option -g window-status-format "#[fg=${window_inactive_fg},bg=${surface},nobold,noitalics,nounderscore] #I:#W "
 tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${surface},bold,noitalics,nounderscore] #I:#{pane_current_command} "
