@@ -2,6 +2,8 @@
 
 set -eu
 
+theme_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
 colors_sh="${HOME}/.termux/material-colors.sh"
 colors_properties="${HOME}/.termux/material-colors.properties"
 
@@ -58,7 +60,8 @@ tmux set-option -gu status-format[2]
 tmux set-option -g status 2
 tmux set-option status 2
 
-tmux bind-key -n MouseDown1Status run-shell 'case "#{mouse_status_range}" in mini-btop|btop) command -v mini-btop-shizuku >/dev/null 2>&1 || { tmux display-message "Run ~/setup-btop-rish first"; exit 0; }; tmux select-window -t :=btop 2>/dev/null || tmux new-window -n btop "mini-btop-shizuku" ;; esac'
+tmux bind-key -n MouseDown1Status run-shell "$theme_dir/open-mini-btop '#{mouse_status_range}' '#{mouse_status_line}' '#{mouse_x}' '#{client_width}'"
+tmux bind-key -n MouseUp1Status run-shell "$theme_dir/open-mini-btop '#{mouse_status_range}' '#{mouse_status_line}' '#{mouse_x}' '#{client_width}'"
 
 tmux set-window-option -g window-status-format "#[fg=${window_inactive_fg},bg=${surface},nobold,noitalics,nounderscore] #I:#W "
 tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${surface},bold,noitalics,nounderscore] #I:#{pane_current_command} "

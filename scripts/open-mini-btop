@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+range=${1:-}
+line=${2:-}
+x=${3:-}
+width=${4:-}
+
+open_btop() {
+	if ! command -v mini-btop-shizuku >/dev/null 2>&1; then
+		tmux display-message "Run ~/setup-btop-rish first"
+		return 0
+	fi
+
+	tmux select-window -t :=btop 2>/dev/null || tmux new-window -n btop "mini-btop-shizuku"
+}
+
+case "$range" in
+	*mini-btop*|*btop*) open_btop; exit 0 ;;
+esac
+
+case "$line:$x:$width" in
+	0:*:*)
+		if [ "$x" -ge 0 ] 2>/dev/null && [ "$width" -ge 1 ] 2>/dev/null && [ "$x" -ge $((width - 34)) ]; then
+			open_btop
+		fi
+		;;
+esac
