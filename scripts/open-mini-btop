@@ -4,19 +4,51 @@ range=${1:-}
 line=${2:-}
 x=${3:-}
 width=${4:-}
+window=${5:-}
+
+case ":${PATH:-}:" in
+	*:/data/data/com.termux/files/usr/bin:*) ;;
+	*) PATH="/data/data/com.termux/files/usr/bin:${PATH:-}" ;;
+esac
+export PATH
 
 open_btop() {
-	if ! command -v mini-btop-shizuku >/dev/null 2>&1; then
+	cmd=$(command -v mini-btop-shizuku 2>/dev/null || true)
+	if [ -z "$cmd" ]; then
 		tmux display-message "Run ~/setup-btop-rish first"
 		return 0
 	fi
 
-	tmux select-window -t :=btop 2>/dev/null || tmux new-window -n btop "mini-btop-shizuku"
+	target=$(tmux show-option -gqv @termux-launcher-tmux-btop-window-id 2>/dev/null || true)
+
+	if [ -n "$target" ] && tmux display-message -p -t "$target" '#{window_id}' >/dev/null 2>&1; then
+		tmux select-window -t "$target"
+		tmux send-keys -t "$target" C-c
+	else
+		target=$(tmux new-window -P -F '#{window_id}' -n btop)
+		tmux set-option -g @termux-launcher-tmux-btop-window-id "$target"
+		tmux set-window-option -t "$target" automatic-rename off
+	fi
+
+	tmux send-keys -t "$target" "$cmd" Enter
 }
 
 case "$range" in
-	*mini-btop*|*btop*) open_btop; exit 0 ;;
+	right|*mini-btop*|*btop*) open_btop; exit 0 ;;
+	window)
+		if [ -n "$window" ]; then
+			tmux select-window -t ":$window"
+		else
+			tmux select-window -t =
+		fi
+		exit 0
+		;;
 esac
+
+if [ -n "$window" ]; then
+	tmux select-window -t ":$window"
+	exit 0
+fi
 
 case "$line:$x:$width" in
 	0:*:*)
