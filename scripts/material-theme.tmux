@@ -45,6 +45,8 @@ window_active_fg=$primary
 window_attention_fg=$tertiary
 
 tmux set-option -g status-style "bg=${surface},fg=${on_surface}"
+tmux set-option -g mouse on
+tmux set-option mouse on
 tmux set-option -g status-left-length 64
 tmux set-option -g status-right-length 88
 tmux set-option -g window-status-separator ""
@@ -60,8 +62,8 @@ tmux set-option -gu status-format[2]
 tmux set-option -g status 2
 tmux set-option status 2
 
-tmux bind-key -n MouseDown1Status run-shell "$theme_dir/open-mini-btop '#{mouse_status_range}' '#{mouse_status_line}' '#{mouse_x}' '#{client_width}'"
-tmux bind-key -n MouseUp1Status run-shell "$theme_dir/open-mini-btop '#{mouse_status_range}' '#{mouse_status_line}' '#{mouse_x}' '#{client_width}'"
+tmux bind-key -n MouseDown1Status select-window -t =
+tmux unbind-key -n MouseUp1Status 2>/dev/null || true
 tmux bind-key -n MouseDown1StatusRight run-shell "$theme_dir/open-mini-btop mini-btop"
 tmux bind-key -n MouseUp1StatusRight run-shell "$theme_dir/open-mini-btop mini-btop"
 
