@@ -56,8 +56,8 @@ tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${su
 tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${surface}]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${surface}] "
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
 tmux set-option -g status-right "#(kew-tmux-status)#[fg=${secondary},bg=${surface}]#{?window_zoomed_flag,ZOOM ,}#[fg=${widget_pill_bg},bg=${surface}]#[range=user|mini-btop,fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[range=none]#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[range=user|mini-btop,fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')#[range=none]#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${tertiary},bg=${widget_pill_bg}]#(launcher-weather-widget | tr -d '\n')#[fg=${widget_pill_bg},bg=${surface}] "
-tmux set-option -g status-format[0] "#[align=left,bg=${surface}]#{T:status-left}#[fg=${cwd_color},bg=${surface},nobold]#{=/36/...:#{s|${HOME}|~|:pane_current_path}}#[align=right,bg=${surface}]#{T:status-right}"
-tmux set-option -g status-format[1] "#[align=centre,bg=${surface}]#{W:#{T:window-status-format},#{T:window-status-current-format}}"
+tmux set-option -g status-format[0] "#[align=left range=left bg=${surface}]#{T:status-left}#[norange fg=${cwd_color},bg=${surface},nobold]#{=/36/...:#{s|${HOME}|~|:pane_current_path}}#[align=right range=right bg=${surface}]#{T:status-right}#[norange]"
+tmux set-option -g status-format[1] "#[list=on align=centre bg=${surface}]#{W:#{T:window-status-format},#{T:window-status-current-format}}#[nolist]"
 tmux set-option -gu status-format[2]
 tmux set-option -g status 2
 tmux set-option status 2
@@ -67,8 +67,8 @@ tmux unbind-key -n MouseUp1Status 2>/dev/null || true
 tmux bind-key -n MouseDown1StatusRight run-shell "$theme_dir/open-mini-btop mini-btop"
 tmux bind-key -n MouseUp1StatusRight run-shell "$theme_dir/open-mini-btop mini-btop"
 
-tmux set-window-option -g window-status-format "#[fg=${window_inactive_fg},bg=${surface},nobold,noitalics,nounderscore] #I:#W "
-tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${surface},bold,noitalics,nounderscore] #I:#{pane_current_command} "
+tmux set-window-option -g window-status-format "#[range=window|#{window_index} fg=${window_inactive_fg},bg=${surface},nobold,noitalics,nounderscore] #I:#W #[norange]"
+tmux set-window-option -g window-status-current-format "#[range=window|#{window_index} list=focus fg=${window_active_fg},bg=${surface},bold,noitalics,nounderscore] #I:#{pane_current_command} #[norange]"
 tmux set-window-option -g window-status-activity-style "fg=${window_attention_fg},bg=${surface},bold"
 tmux set-window-option -g window-status-bell-style "fg=${error},bg=${surface},bold"
 
