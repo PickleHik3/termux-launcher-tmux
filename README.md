@@ -45,5 +45,4 @@ The helper commands are documented in the Termux Launcher [tmux status setup](ht
 - Shows `PRFX` and `COPY` state pills on the left.
 - Shows the current directory as a muted `~/...` path.
 - Shows CPU, RAM, and weather in a rounded right-side pill.
-- Tapping CPU or RAM opens the mini `btop` Shizuku view when `mini-btop-shizuku` is installed.
 - Shows windows on the second row, with the focused window showing the active process name.
