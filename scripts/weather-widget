@@ -3,11 +3,54 @@ set -u
 
 mode="${TERMUX_LAUNCHER_TMUX_WEATHER_MODE:-compact}"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/launcher-weather-widget.json"
+max_age="${LAUNCHER_WEATHER_MAX_AGE:-900}"
+weather_url="${LAUNCHER_WEATHER_URL:-https://wttr.in/?format=j1}"
+
+cache_mtime() {
+	stat -c %Y "$cache" 2>/dev/null || printf '0'
+}
+
+cache_is_fresh() {
+	[ -r "$cache" ] || return 1
+	age=$(($(date +%s) - $(cache_mtime)))
+	[ "$age" -ge 0 ] && [ "$age" -le "$max_age" ]
+}
+
+refresh_cache() {
+	command -v curl >/dev/null 2>&1 || return 1
+	command -v jq >/dev/null 2>&1 || return 1
+	mkdir -p "$(dirname "$cache")" 2>/dev/null || return 1
+
+	tmp="${cache}.$$"
+	if curl -fsS --connect-timeout 4 --max-time 8 "$weather_url" > "$tmp" 2>/dev/null &&
+		jq -e '.current_condition[0].temp_C' "$tmp" >/dev/null 2>&1; then
+		mv "$tmp" "$cache"
+		return 0
+	fi
+
+	rm -f "$tmp"
+	return 1
+}
+
+ensure_cache() {
+	cache_is_fresh || refresh_cache || [ -r "$cache" ]
+}
 
 fallback() {
-	weather="$(launcher-weather-widget 2>/dev/null || true)"
+	if command -v launcher-weather-widget >/dev/null 2>&1; then
+		weather="$(launcher-weather-widget 2>/dev/null || true)"
+	else
+		weather=''
+	fi
 	if [ -n "$weather" ]; then
 		printf '%s' "$weather"
+	elif ensure_cache && command -v jq >/dev/null 2>&1; then
+		weather="$(jq -r '.current_condition[0] | "󰖐 " + (.temp_C | tostring) + "°"' "$cache" 2>/dev/null || true)"
+		if [ -n "$weather" ] && [ "$weather" != "null" ]; then
+			printf '%s' "$weather"
+		else
+			printf '󰖐 --'
+		fi
 	else
 		printf '󰖐 --'
 	fi
@@ -15,7 +58,7 @@ fallback() {
 
 case "$mode" in
 	condition|full|verbose)
-		fallback >/dev/null
+		ensure_cache >/dev/null 2>&1 || fallback >/dev/null
 		if [ -r "$cache" ] && command -v jq >/dev/null 2>&1; then
 			hour="$(date +%H)"
 			if [ "$hour" -ge 18 ] || [ "$hour" -lt 6 ]; then
