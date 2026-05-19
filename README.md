@@ -153,7 +153,6 @@ Change the app ids to match your `launcherctl apps` output.
 - Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
 - Shows a compact two-row tmux status bar for Android screens.
 - Shows session, prefix, and copy mode as elevated Material-style chips on the left.
-- Shows the current directory as a muted, hard-truncated `~/...` path.
 - Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in a rounded right-side chip.
 - Can optionally add storage, battery, CPU temperature, and battery temperature widgets.
 - Shows windows from the left edge of the second row, with the focused window showing the active process name.

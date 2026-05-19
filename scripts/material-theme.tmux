@@ -50,7 +50,6 @@ prefix_fg=$on_primary
 copy_bg=$terminal_yellow
 copy_fg=$surface
 session_fg=$on_surface
-path_fg=$subtle_fg
 window_inactive_fg=$subtle_fg
 window_active_fg=$primary
 window_attention_fg=$terminal_yellow
@@ -130,7 +129,9 @@ tmux set-option -g status-style "bg=${bar_bg},fg=${on_surface}"
 tmux set-option -g status-position top
 tmux set-option -g status-interval 5
 tmux set-option -g mouse on
-tmux set-option mouse on
+tmux set-option -g base-index 1
+tmux set-window-option -g pane-base-index 1
+tmux set-option -g renumber-windows on
 tmux set-option -g status-left-length 72
 tmux set-option -g status-right-length 180
 tmux set-option -g window-status-separator ""
@@ -140,7 +141,7 @@ tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${ba
 tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${bar_bg}]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${bar_bg}] "
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
 tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}${right_pill}"
-tmux set-option -g status-format[0] "#[align=left range=left bg=${bar_bg}]#{T:status-left}#[norange fg=${path_fg},bg=${bar_bg},nobold]󰉋 #{=/30/...:#{s|${HOME}|~|:pane_current_path}}#[align=right range=right bg=${bar_bg}]#{T:status-right}#[norange]"
+tmux set-option -g status-format[0] "#[align=left range=left bg=${bar_bg}]#{T:status-left}#[align=right range=right bg=${bar_bg}]#{T:status-right}#[norange]"
 tmux set-option -g status-format[1] "#[list=on align=left bg=${bar_bg}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]${now_playing}"
 tmux set-option -gu status-format[2]
 tmux set-option -g status 2
