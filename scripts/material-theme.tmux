@@ -59,7 +59,6 @@ cpu_color=$primary
 ram_color=$secondary
 storage_color=$terminal_blue
 battery_color=$terminal_green
-network_color=$subtle_fg
 temperature_color=$terminal_yellow
 weather_color=$tertiary
 zoom_color=$terminal_magenta
@@ -71,7 +70,6 @@ option_on() {
 	esac
 }
 
-kew_status=''
 system_widgets=''
 weather_widget=''
 now_playing=''
@@ -79,13 +77,8 @@ resource_widgets=''
 show_system_widgets=off
 show_storage_widget=off
 show_battery_widget=off
-show_network_widget=off
 show_cpu_temp_widget=off
 show_battery_temp_widget=off
-
-if option_on @termux-launcher-tmux-kew-status on; then
-	kew_status="#(kew-tmux-status)"
-fi
 
 if option_on @termux-launcher-tmux-system-widgets on; then
 	show_system_widgets=on
@@ -108,10 +101,6 @@ if option_on @termux-launcher-tmux-battery-widget off; then
 	show_battery_widget=on
 fi
 
-if option_on @termux-launcher-tmux-network-widget off; then
-	show_network_widget=on
-fi
-
 if option_on @termux-launcher-tmux-cpu-temperature-widget off; then
 	show_cpu_temp_widget=on
 fi
@@ -121,8 +110,8 @@ if option_on @termux-launcher-tmux-battery-temperature-widget off; then
 	show_battery_widget=on
 fi
 
-if [ "$show_system_widgets" = on ] || [ "$show_storage_widget" = on ] || [ "$show_battery_widget" = on ] || [ "$show_network_widget" = on ] || [ "$show_cpu_temp_widget" = on ] || [ "$show_battery_temp_widget" = on ]; then
-	resource_widgets="#(TERMUX_LAUNCHER_TMUX_SHOW_SYSTEM='${show_system_widgets}' TERMUX_LAUNCHER_TMUX_SHOW_STORAGE='${show_storage_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY='${show_battery_widget}' TERMUX_LAUNCHER_TMUX_SHOW_NETWORK='${show_network_widget}' TERMUX_LAUNCHER_TMUX_SHOW_CPU_TEMP='${show_cpu_temp_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY_TEMP='${show_battery_temp_widget}' TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${chip_bg_high}' TERMUX_LAUNCHER_TMUX_CPU_FG='${cpu_color}' TERMUX_LAUNCHER_TMUX_RAM_FG='${ram_color}' TERMUX_LAUNCHER_TMUX_STORAGE_FG='${storage_color}' TERMUX_LAUNCHER_TMUX_BATTERY_FG='${battery_color}' TERMUX_LAUNCHER_TMUX_NETWORK_FG='${network_color}' TERMUX_LAUNCHER_TMUX_CPU_TEMP_FG='${temperature_color}' TERMUX_LAUNCHER_TMUX_BATTERY_TEMP_FG='${temperature_color}' ${theme_dir}/resource-widget right | tr -d '\n')"
+if [ "$show_system_widgets" = on ] || [ "$show_storage_widget" = on ] || [ "$show_battery_widget" = on ] || [ "$show_cpu_temp_widget" = on ] || [ "$show_battery_temp_widget" = on ]; then
+	resource_widgets="#(TERMUX_LAUNCHER_TMUX_SHOW_SYSTEM='${show_system_widgets}' TERMUX_LAUNCHER_TMUX_SHOW_STORAGE='${show_storage_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY='${show_battery_widget}' TERMUX_LAUNCHER_TMUX_SHOW_CPU_TEMP='${show_cpu_temp_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY_TEMP='${show_battery_temp_widget}' TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${chip_bg_high}' TERMUX_LAUNCHER_TMUX_CPU_FG='${cpu_color}' TERMUX_LAUNCHER_TMUX_RAM_FG='${ram_color}' TERMUX_LAUNCHER_TMUX_STORAGE_FG='${storage_color}' TERMUX_LAUNCHER_TMUX_BATTERY_FG='${battery_color}' TERMUX_LAUNCHER_TMUX_CPU_TEMP_FG='${temperature_color}' TERMUX_LAUNCHER_TMUX_BATTERY_TEMP_FG='${temperature_color}' ${theme_dir}/resource-widget right | tr -d '\n')"
 fi
 
 if [ -n "$resource_widgets" ] && [ -n "$weather_widget" ]; then
@@ -150,9 +139,9 @@ tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${chip_bg_high},bg=$
 tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${bar_bg}]#[fg=${prefix_fg},bg=${prefix_bg},bold] PREFIX #[fg=${prefix_bg},bg=${bar_bg}] "
 tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${bar_bg}]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${bar_bg}] "
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
-tmux set-option -g status-right "${kew_status}#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}${right_pill}"
-tmux set-option -g status-format[0] "#[align=left range=left bg=${bar_bg}]#{T:status-left}#[norange fg=${path_fg},bg=${bar_bg},nobold]#{=/42/...:#{s|${HOME}|~|:pane_current_path}}#[align=right range=right bg=${bar_bg}]#{T:status-right}#[norange]"
-tmux set-option -g status-format[1] "#[list=on align=centre bg=${bar_bg}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]${now_playing}"
+tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}${right_pill}"
+tmux set-option -g status-format[0] "#[align=left range=left bg=${bar_bg}]#{T:status-left}#[norange fg=${path_fg},bg=${bar_bg},nobold]󰉋 #{=/30/...:#{s|${HOME}|~|:pane_current_path}}#[align=right range=right bg=${bar_bg}]#{T:status-right}#[norange]"
+tmux set-option -g status-format[1] "#[list=on align=left bg=${bar_bg}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]${now_playing}"
 tmux set-option -gu status-format[2]
 tmux set-option -g status 2
 tmux set-option status 2

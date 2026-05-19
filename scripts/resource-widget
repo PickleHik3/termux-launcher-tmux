@@ -7,7 +7,6 @@ cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/termux-launcher-tmux"
 cache_file="$cache_dir/resources.json"
 fallback_cache="${XDG_CACHE_HOME:-$HOME/.cache}/launcher-system-monitor.json"
 lock_dir="$cache_dir/resources.lock"
-network_state="$cache_dir/network.tsv"
 ttl="${TERMUX_LAUNCHER_TMUX_RESOURCE_TTL:-5}"
 stale_ttl="${TERMUX_LAUNCHER_TMUX_RESOURCE_STALE_TTL:-60}"
 
@@ -75,15 +74,6 @@ percent() {
 		p = (used * 100) / total;
 		if (p < 0) p = 0; if (p > 100) p = 100;
 		printf "%.0f", p;
-	}'
-}
-
-human_bytes() {
-	awk -v b="${1:-0}" 'BEGIN {
-		split("B KB MB GB TB", u, " ");
-		i = 1; v = b + 0;
-		while (v >= 1024 && i < 5) { v /= 1024; i++; }
-		if (i <= 2) printf "%.0f%s", v, u[i]; else printf "%.1f%s", v, u[i];
 	}'
 }
 
@@ -159,29 +149,6 @@ package_temp() {
 		// empty))))'
 }
 
-network_segment() {
-	row="$(printf '%s' "$json" | jq -r '(.network // [] | map(select(.interface != "lo")) | sort_by((.rxBytes // 0) + (.txBytes // 0)) | last) // empty | [.interface, (.rxBytes // 0), (.txBytes // 0)] | @tsv' 2>/dev/null || true)"
-	[ -n "$row" ] || return 0
-	now="$(now_epoch)"
-	set -- $row
-	iface="${1:-}"; rx="${2:-0}"; tx="${3:-0}"
-	[ -n "$iface" ] || return 0
-	prev="$(awk -v i="$iface" '$1 == i { print $2, $3, $4; exit }' "$network_state" 2>/dev/null || true)"
-	tmp="$network_state.tmp.$$"
-	awk -v i="$iface" '$1 != i { print }' "$network_state" 2>/dev/null > "$tmp" || true
-	printf '%s %s %s %s\n' "$iface" "$now" "$rx" "$tx" >> "$tmp"
-	mv "$tmp" "$network_state"
-	[ -n "$prev" ] || return 0
-	set -- $prev
-	prev_now="${1:-0}"; prev_rx="${2:-0}"; prev_tx="${3:-0}"
-	dt=$((now - prev_now))
-	[ "$dt" -gt 0 ] || return 0
-	drx=$((rx - prev_rx)); dtx=$((tx - prev_tx))
-	[ "$drx" -lt 0 ] && drx=0
-	[ "$dtx" -lt 0 ] && dtx=0
-	printf '󰤨 %s↓ %s↑' "$(human_bytes "$((drx / dt))")" "$(human_bytes "$((dtx / dt))")"
-}
-
 cpu_segment() {
 	cpu="$(cpu_percent)"
 	[ -n "$cpu" ] || return 0
@@ -229,7 +196,6 @@ cpu_fg="${TERMUX_LAUNCHER_TMUX_CPU_FG:-default}"
 ram_fg="${TERMUX_LAUNCHER_TMUX_RAM_FG:-default}"
 storage_fg="${TERMUX_LAUNCHER_TMUX_STORAGE_FG:-default}"
 battery_fg="${TERMUX_LAUNCHER_TMUX_BATTERY_FG:-default}"
-network_fg="${TERMUX_LAUNCHER_TMUX_NETWORK_FG:-default}"
 temp_fg="${TERMUX_LAUNCHER_TMUX_CPU_TEMP_FG:-default}"
 battery_temp_fg="${TERMUX_LAUNCHER_TMUX_BATTERY_TEMP_FG:-default}"
 
@@ -252,10 +218,6 @@ case "$mode" in
 		if is_on "${TERMUX_LAUNCHER_TMUX_SHOW_BATTERY:-off}"; then
 			part="$(battery_segment)"
 			[ -n "$part" ] && join_segment "#[fg=${battery_fg},bg=${bg}]${part}"
-		fi
-		if is_on "${TERMUX_LAUNCHER_TMUX_SHOW_NETWORK:-off}"; then
-			part="$(network_segment)"
-			[ -n "$part" ] && join_segment "#[fg=${network_fg},bg=${bg}]${part}"
 		fi
 		printf '%s' "$out"
 		;;

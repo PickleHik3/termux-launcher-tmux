@@ -34,7 +34,6 @@ tmux source-file ~/.tmux.conf
 - optional helper commands on `PATH`:
   - `launcher-system-monitor`
   - `launcher-weather-widget`
-  - `kew-tmux-status`
   - `kew-now-playing`
 
 The helper commands are documented in the Termux Launcher [tmux status setup](https://github.com/PickleHik3/termux-launcher/blob/dev/docs/en/Launcher_Tmux_Status_Setup.md).
@@ -44,10 +43,9 @@ The helper commands are documented in the Termux Launcher [tmux status setup](ht
 Set any of these before the TPM line in `~/.tmux.conf`, then reload tmux.
 
 ```tmux
-# Defaults are all "on".
+# Core widgets default to "on".
 set -g @termux-launcher-tmux-system-widgets on
 set -g @termux-launcher-tmux-weather on
-set -g @termux-launcher-tmux-kew-status on
 set -g @termux-launcher-tmux-now-playing on
 
 # Weather display: compact shows "󰖔 37°"; condition shows "󰖔 37° Sunny".
@@ -56,7 +54,6 @@ set -g @termux-launcher-tmux-weather-mode compact
 # Extra resource widgets default to "off".
 set -g @termux-launcher-tmux-storage-widget off
 set -g @termux-launcher-tmux-battery-widget off
-set -g @termux-launcher-tmux-network-widget off
 set -g @termux-launcher-tmux-cpu-temperature-widget off
 set -g @termux-launcher-tmux-battery-temperature-widget off
 ```
@@ -66,7 +63,6 @@ Turn widgets off individually:
 ```tmux
 set -g @termux-launcher-tmux-system-widgets off
 set -g @termux-launcher-tmux-weather off
-set -g @termux-launcher-tmux-kew-status off
 set -g @termux-launcher-tmux-now-playing off
 ```
 
@@ -81,12 +77,11 @@ Turn extra resource widgets on individually:
 ```tmux
 set -g @termux-launcher-tmux-storage-widget on
 set -g @termux-launcher-tmux-battery-widget on
-set -g @termux-launcher-tmux-network-widget on
 set -g @termux-launcher-tmux-cpu-temperature-widget on
 set -g @termux-launcher-tmux-battery-temperature-widget on
 ```
 
-The extra widgets read `launcherctl resources`. The network widget needs the `network` array from that endpoint; if the backend does not expose it on a device, the widget stays blank.
+The extra widgets read `launcherctl resources`.
 
 ## Controls
 
@@ -158,8 +153,8 @@ Change the app ids to match your `launcherctl apps` output.
 - Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
 - Shows a compact two-row tmux status bar for Android screens.
 - Shows session, prefix, and copy mode as elevated Material-style chips on the left.
-- Shows the current directory as a muted `~/...` path with conservative truncation.
+- Shows the current directory as a muted, hard-truncated `~/...` path.
 - Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in a rounded right-side chip.
-- Can optionally add storage, battery, network, CPU temperature, and battery temperature widgets.
-- Shows windows on the second row, with the focused window showing the active process name.
+- Can optionally add storage, battery, CPU temperature, and battery temperature widgets.
+- Shows windows from the left edge of the second row, with the focused window showing the active process name.
 - Shows `kew-now-playing` on the far right of the second row when it has content.
