@@ -22,6 +22,34 @@ human_bytes() {
 	}'
 }
 
+battery_icon() {
+	level="$1"
+	charging="$2"
+	if [ "$charging" = "true" ]; then
+		printf '󰂄'
+	elif [ "$level" -le 10 ]; then
+		printf '󰁺'
+	elif [ "$level" -le 20 ]; then
+		printf '󰁻'
+	elif [ "$level" -le 30 ]; then
+		printf '󰁼'
+	elif [ "$level" -le 40 ]; then
+		printf '󰁽'
+	elif [ "$level" -le 50 ]; then
+		printf '󰁾'
+	elif [ "$level" -le 60 ]; then
+		printf '󰁿'
+	elif [ "$level" -le 70 ]; then
+		printf '󰂀'
+	elif [ "$level" -le 80 ]; then
+		printf '󰂁'
+	elif [ "$level" -le 90 ]; then
+		printf '󰂂'
+	else
+		printf '󰁹'
+	fi
+}
+
 percent() {
 	awk -v used="${1:-0}" -v total="${2:-0}" 'BEGIN {
 		if (total <= 0) exit 1;
@@ -46,8 +74,9 @@ case "$mode" in
 		charging="$(printf '%s' "$json" | jq -r '.battery.charging // false')"
 		[ -n "$level" ] || exit 0
 		level="$(awk -v v="$level" 'BEGIN { printf "%.0f", v }')"
-		icon="󰁹"
-		[ "$charging" = "true" ] && icon="󰂄"
+		[ "$level" -lt 0 ] && level=0
+		[ "$level" -gt 100 ] && level=100
+		icon="$(battery_icon "$level" "$charging")"
 		printf '%s %s%%' "$icon" "$level"
 		;;
 	network)
@@ -78,12 +107,12 @@ case "$mode" in
 	cpu-temp)
 		temp="$(printf '%s' "$json" | jq -r '(.thermal // [] | map(select((.type | test("cpu|cpuss"; "i")) and (.tempC > -100) and (.tempC < 200))) | max_by(.tempC).tempC) // empty')"
 		[ -n "$temp" ] || exit 0
-		printf ' %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
+		printf ' %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
 		;;
 	battery-temp)
 		temp="$(printf '%s' "$json" | jq -r '.battery.temperatureC // empty')"
 		[ -n "$temp" ] || exit 0
-		printf ' %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
+		printf '󰔏 %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
 		;;
 	*)
 		exit 0

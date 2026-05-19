@@ -121,6 +121,7 @@ else
 fi
 
 tmux set-option -g status-style "bg=${surface},fg=${on_surface}"
+tmux set-option -g status-position top
 tmux set-option -g mouse on
 tmux set-option mouse on
 tmux set-option -g status-left-length 64
