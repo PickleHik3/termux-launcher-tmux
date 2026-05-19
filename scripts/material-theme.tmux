@@ -35,12 +35,9 @@ secondary=${TERMUX_MATERIAL_SECONDARY:-#B3CCBE}
 tertiary=${TERMUX_MATERIAL_TERTIARY:-#A5CCDF}
 error=${TERMUX_MATERIAL_ERROR:-#F2B8B5}
 terminal_green=${TERMUX_MATERIAL_TERMINAL_COLOR10:-$primary}
-terminal_yellow=${TERMUX_MATERIAL_TERMINAL_COLOR11:-$tertiary}
-terminal_blue=${TERMUX_MATERIAL_TERMINAL_COLOR12:-$tertiary}
-terminal_pink=${TERMUX_MATERIAL_TERMINAL_COLOR13:-$error}
-terminal_muted=${TERMUX_MATERIAL_TERMINAL_COLOR8:-$on_surface_variant}
+terminal_yellow=${TERMUX_MATERIAL_TERMINAL_COLOR11:-$secondary}
 widget_pill_bg=$surface_container_high
-separator_color=$terminal_muted
+separator_color=$outline_variant
 prefix_bg=$primary
 prefix_fg=$surface
 copy_bg=$terminal_yellow
@@ -49,13 +46,13 @@ cwd_color=$on_surface_variant
 window_inactive_fg=$on_surface_variant
 window_active_fg=$primary
 window_attention_fg=$terminal_yellow
-cpu_color=$primary
-ram_color=$secondary
-storage_color=$terminal_blue
-battery_color=$terminal_green
-network_color=$tertiary
-temperature_color=$terminal_yellow
-weather_color=$terminal_yellow
+cpu_color=$on_surface
+ram_color=$on_surface
+storage_color=$on_surface
+battery_color=$on_surface
+network_color=$on_surface_variant
+temperature_color=$secondary
+weather_color=$tertiary
 
 option_on() {
 	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
@@ -124,7 +121,7 @@ else
 fi
 
 if [ -n "$right_widgets" ]; then
-	right_pill="#[fg=${widget_pill_bg},bg=${surface}]${right_widgets}#[fg=${widget_pill_bg},bg=${surface}] "
+	right_pill="#[fg=${widget_pill_bg},bg=${surface}]#[fg=${on_surface},bg=${widget_pill_bg}] ${right_widgets} #[fg=${widget_pill_bg},bg=${surface}] "
 else
 	right_pill=''
 fi
