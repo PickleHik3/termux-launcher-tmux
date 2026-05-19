@@ -55,6 +55,7 @@ kew_status=''
 system_widgets=''
 weather_widget=''
 now_playing=''
+extra_widgets=''
 
 if option_on @termux-launcher-tmux-kew-status on; then
 	kew_status="#(kew-tmux-status)"
@@ -72,10 +73,45 @@ if option_on @termux-launcher-tmux-now-playing on; then
 	now_playing="#[align=right fg=${tertiary},bg=${surface},nobold]#(kew-now-playing | tr -d '\n')"
 fi
 
+append_extra_widget() {
+	widget="$1"
+	if [ -n "$extra_widgets" ]; then
+		extra_widgets="${extra_widgets}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · ${widget}"
+	else
+		extra_widgets="$widget"
+	fi
+}
+
+if option_on @termux-launcher-tmux-storage-widget off; then
+	append_extra_widget "#[fg=${secondary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget storage | tr -d '\n')"
+fi
+
+if option_on @termux-launcher-tmux-battery-widget off; then
+	append_extra_widget "#[fg=${primary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget battery | tr -d '\n')"
+fi
+
+if option_on @termux-launcher-tmux-network-widget off; then
+	append_extra_widget "#[fg=${tertiary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget network | tr -d '\n')"
+fi
+
+if option_on @termux-launcher-tmux-cpu-temperature-widget off; then
+	append_extra_widget "#[fg=${error},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget cpu-temp | tr -d '\n')"
+fi
+
+if option_on @termux-launcher-tmux-battery-temperature-widget off; then
+	append_extra_widget "#[fg=${tertiary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget battery-temp | tr -d '\n')"
+fi
+
 if [ -n "$system_widgets" ] && [ -n "$weather_widget" ]; then
 	right_widgets="${system_widgets}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · ${weather_widget}"
 else
 	right_widgets="${system_widgets}${weather_widget}"
+fi
+
+if [ -n "$right_widgets" ] && [ -n "$extra_widgets" ]; then
+	right_widgets="${right_widgets}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · ${extra_widgets}"
+else
+	right_widgets="${right_widgets}${extra_widgets}"
 fi
 
 if [ -n "$right_widgets" ]; then
@@ -88,7 +124,7 @@ tmux set-option -g status-style "bg=${surface},fg=${on_surface}"
 tmux set-option -g mouse on
 tmux set-option mouse on
 tmux set-option -g status-left-length 64
-tmux set-option -g status-right-length 88
+tmux set-option -g status-right-length 160
 tmux set-option -g window-status-separator ""
 
 tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${widget_pill_bg},bg=${surface}]#[fg=${primary},bg=${widget_pill_bg},bold] #S #[fg=${widget_pill_bg},bg=${surface}] "

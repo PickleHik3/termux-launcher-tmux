@@ -49,6 +49,13 @@ set -g @termux-launcher-tmux-system-widgets on
 set -g @termux-launcher-tmux-weather on
 set -g @termux-launcher-tmux-kew-status on
 set -g @termux-launcher-tmux-now-playing on
+
+# Extra resource widgets default to "off".
+set -g @termux-launcher-tmux-storage-widget off
+set -g @termux-launcher-tmux-battery-widget off
+set -g @termux-launcher-tmux-network-widget off
+set -g @termux-launcher-tmux-cpu-temperature-widget off
+set -g @termux-launcher-tmux-battery-temperature-widget off
 ```
 
 Turn widgets off individually:
@@ -60,16 +67,28 @@ set -g @termux-launcher-tmux-kew-status off
 set -g @termux-launcher-tmux-now-playing off
 ```
 
+Turn extra resource widgets on individually:
+
+```tmux
+set -g @termux-launcher-tmux-storage-widget on
+set -g @termux-launcher-tmux-battery-widget on
+set -g @termux-launcher-tmux-network-widget on
+set -g @termux-launcher-tmux-cpu-temperature-widget on
+set -g @termux-launcher-tmux-battery-temperature-widget on
+```
+
+The extra widgets read `launcherctl resources`. The network widget needs the `network` array from that endpoint; if the backend does not expose it on a device, the widget stays blank.
+
 ## Controls
 
 | Key | Action |
 | --- | --- |
 | `C-Space` | tmux prefix |
 | `C-b` | fallback prefix |
-| `prefix h` | show keybind reference popup |
+| `Alt+e` | show keybind reference popup |
 | `prefix q` | reload `~/.tmux.conf` |
 | `F12` | run `termux-reload-settings` |
-| `prefix H` / `prefix v` | split pane below / right |
+| `prefix h` / `prefix v` | split pane below / right |
 | `prefix x` | kill pane |
 | `C-M-Arrow` | select pane |
 | `C-M-S-Arrow` | resize pane |
@@ -103,5 +122,6 @@ Change the app ids to match your `launcherctl apps` output.
 - Shows `PRFX` and `COPY` state pills on the left.
 - Shows the current directory as a muted `~/...` path.
 - Shows CPU, RAM, and weather in a rounded right-side pill.
+- Can optionally add storage, battery, network, CPU temperature, and battery temperature widgets.
 - Shows windows on the second row, with the focused window showing the active process name.
 - Shows `kew-now-playing` on the far right of the second row when it has content.

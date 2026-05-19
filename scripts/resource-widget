@@ -1,0 +1,91 @@
+#!/usr/bin/env sh
+set -eu
+
+PATH="/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin:${PATH:-}"
+mode="${1:-}"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/termux-launcher-tmux"
+network_state="$cache_dir/network.tsv"
+
+command -v launcherctl >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+
+json="$(launcherctl resources 2>/dev/null || true)"
+[ -n "$json" ] || exit 0
+printf '%s' "$json" | jq -e '.ok == true' >/dev/null 2>&1 || exit 0
+
+human_bytes() {
+	awk -v b="${1:-0}" 'BEGIN {
+		split("B KB MB GB TB", u, " ");
+		i = 1; v = b + 0;
+		while (v >= 1024 && i < 5) { v /= 1024; i++; }
+		if (i <= 2) printf "%.0f%s", v, u[i]; else printf "%.1f%s", v, u[i];
+	}'
+}
+
+percent() {
+	awk -v used="${1:-0}" -v total="${2:-0}" 'BEGIN {
+		if (total <= 0) exit 1;
+		p = (used * 100) / total;
+		if (p < 0) p = 0; if (p > 100) p = 100;
+		printf "%.0f", p;
+	}'
+}
+
+case "$mode" in
+	storage)
+		item="$(printf '%s' "$json" | jq -c '(.storage // [] | map(select(.label == "shared"))[0]) // (.storage // [] | map(select(.label == "data"))[0]) // empty')"
+		[ -n "$item" ] || exit 0
+		used="$(printf '%s' "$item" | jq -r '.usedBytes // 0')"
+		total="$(printf '%s' "$item" | jq -r '.totalBytes // 0')"
+		pct="$(percent "$used" "$total" 2>/dev/null || true)"
+		[ -n "$pct" ] || exit 0
+		printf '󰋊 %s%%' "$pct"
+		;;
+	battery)
+		level="$(printf '%s' "$json" | jq -r '.battery.levelPercent // empty')"
+		charging="$(printf '%s' "$json" | jq -r '.battery.charging // false')"
+		[ -n "$level" ] || exit 0
+		level="$(awk -v v="$level" 'BEGIN { printf "%.0f", v }')"
+		icon="󰁹"
+		[ "$charging" = "true" ] && icon="󰂄"
+		printf '%s %s%%' "$icon" "$level"
+		;;
+	network)
+		row="$(printf '%s' "$json" | jq -r '(.network // [] | map(select(.interface != "lo")) | sort_by((.rxBytes // 0) + (.txBytes // 0)) | last) // empty | [.interface, (.rxBytes // 0), (.txBytes // 0)] | @tsv' 2>/dev/null || true)"
+		[ -n "$row" ] || exit 0
+		mkdir -p "$cache_dir"
+		now="$(date +%s)"
+		set -- $row
+		iface="${1:-}"; rx="${2:-0}"; tx="${3:-0}"
+		[ -n "$iface" ] || exit 0
+		prev="$(awk -v i="$iface" '$1 == i { print $2, $3, $4; exit }' "$network_state" 2>/dev/null || true)"
+		tmp="$network_state.tmp.$$"
+		awk -v i="$iface" '$1 != i { print }' "$network_state" 2>/dev/null > "$tmp" || true
+		printf '%s %s %s %s\n' "$iface" "$now" "$rx" "$tx" >> "$tmp"
+		mv "$tmp" "$network_state"
+		[ -n "$prev" ] || exit 0
+		set -- $prev
+		prev_now="${1:-0}"; prev_rx="${2:-0}"; prev_tx="${3:-0}"
+		dt=$((now - prev_now))
+		[ "$dt" -gt 0 ] || exit 0
+		drx=$((rx - prev_rx)); dtx=$((tx - prev_tx))
+		[ "$drx" -lt 0 ] && drx=0
+		[ "$dtx" -lt 0 ] && dtx=0
+		rx_rate="$(human_bytes "$((drx / dt))")"
+		tx_rate="$(human_bytes "$((dtx / dt))")"
+		printf '󰤨 %s↓ %s↑' "$rx_rate" "$tx_rate"
+		;;
+	cpu-temp)
+		temp="$(printf '%s' "$json" | jq -r '(.thermal // [] | map(select((.type | test("cpu|cpuss"; "i")) and (.tempC > -100) and (.tempC < 200))) | max_by(.tempC).tempC) // empty')"
+		[ -n "$temp" ] || exit 0
+		printf ' %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
+		;;
+	battery-temp)
+		temp="$(printf '%s' "$json" | jq -r '.battery.temperatureC // empty')"
+		[ -n "$temp" ] || exit 0
+		printf ' %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
+		;;
+	*)
+		exit 0
+		;;
+esac

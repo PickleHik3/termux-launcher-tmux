@@ -86,7 +86,7 @@ action_w=11
 [ "$col_w" -lt 22 ] && action_w=9
 
 print_titles "Windows" "Panes"
-print_row "New" "Prefix + c" "Below" "Prefix + H"
+print_row "New" "Prefix + c" "Below" "Prefix + h"
 print_row "Rename" "Prefix + r" "Right" "Prefix + v"
 print_row "Close" "Prefix + k" "Close" "Prefix + x"
 print_row "Jump" "Alt + 1..9" "Focus" "C-M + Arrows"
@@ -95,7 +95,7 @@ print_row "Touch" "window name" "" ""
 print_row "Move" "Alt+Shift L/R" "" ""
 printf '\n'
 print_titles "Sessions" "General"
-print_row "New" "Prefix + C" "Help" "Prefix + h"
+print_row "New" "Prefix + C" "Help" "Alt + e"
 print_row "Rename" "Prefix + R" "Reload" "Prefix + q"
 print_row "Close" "Prefix + K" "Settings" "F12"
 print_row "Cycle" "Alt + Up/Dn" "Prefix" "C-Space"
