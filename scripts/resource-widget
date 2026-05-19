@@ -179,7 +179,7 @@ cpu_segment() {
 	if is_on "${TERMUX_LAUNCHER_TMUX_SHOW_CPU_TEMP:-off}"; then
 		temp="$(package_temp)"
 		if [ -n "$temp" ]; then
-			seg="${seg} #[fg=${temp_fg},bg=${bg}]$(temp_icon "$temp") $(awk -v v="$temp" 'BEGIN { printf "%.0f°C", v }')"
+			seg="${seg}#[fg=${temp_fg},bg=${bg}] $(temp_icon "$temp")$(awk -v v="$temp" 'BEGIN { printf "%.0f°C", v }')"
 		fi
 	fi
 	printf '%s' "$seg"
@@ -206,7 +206,7 @@ battery_segment() {
 	if is_on "${TERMUX_LAUNCHER_TMUX_SHOW_BATTERY_TEMP:-off}"; then
 		temp="$(battery_temp)"
 		if [ -n "$temp" ]; then
-			seg="${seg} #[fg=${battery_temp_fg},bg=${bg}]$(temp_icon "$temp") $(awk -v v="$temp" 'BEGIN { printf "%.0f°C", v }')"
+			seg="${seg}#[fg=${battery_temp_fg},bg=${bg}] $(temp_icon "$temp")$(awk -v v="$temp" 'BEGIN { printf "%.0f°C", v }')"
 		fi
 	fi
 	printf '%s' "$seg"
