@@ -90,7 +90,7 @@ if option_on @termux-launcher-tmux-weather on; then
 fi
 
 if option_on @termux-launcher-tmux-now-playing on; then
-	now_playing="#[align=right fg=${secondary},bg=${bar_bg},nobold] #(kew-now-playing | tr -d '\n') "
+	now_playing="#[align=right fg=${secondary},bg=${bar_bg},nobold] #(${theme_dir}/now-playing-widget | tr -d '\n') "
 fi
 
 if option_on @termux-launcher-tmux-storage-widget off; then

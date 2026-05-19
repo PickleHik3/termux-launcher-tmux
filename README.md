@@ -156,4 +156,4 @@ Change the app ids to match your `launcherctl apps` output.
 - Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in a rounded right-side chip.
 - Can optionally add storage, battery, CPU temperature, and battery temperature widgets.
 - Shows windows from the left edge of the second row, with the focused window showing the active process name.
-- Shows `kew-now-playing` on the far right of the second row when it has content.
+- Shows the current `kew` track on the far right of the second row only while playback is active.
