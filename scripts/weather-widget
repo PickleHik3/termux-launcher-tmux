@@ -5,7 +5,12 @@ mode="${TERMUX_LAUNCHER_TMUX_WEATHER_MODE:-compact}"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/launcher-weather-widget.json"
 
 fallback() {
-	launcher-weather-widget 2>/dev/null || printf '󰖐 --'
+	weather="$(launcher-weather-widget 2>/dev/null || true)"
+	if [ -n "$weather" ]; then
+		printf '%s' "$weather"
+	else
+		printf '󰖐 --'
+	fi
 }
 
 case "$mode" in

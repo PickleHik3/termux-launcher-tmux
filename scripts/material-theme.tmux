@@ -85,6 +85,7 @@ fi
 
 if option_on @termux-launcher-tmux-weather on; then
 	weather_mode="$(tmux show-option -gqv @termux-launcher-tmux-weather-mode 2>/dev/null || printf 'compact')"
+	[ -n "$weather_mode" ] || weather_mode=compact
 	weather_widget="#[fg=${weather_color},bg=${chip_bg_high}]#(TERMUX_LAUNCHER_TMUX_WEATHER_MODE='${weather_mode}' ${theme_dir}/weather-widget | tr -d '\n')"
 fi
 
