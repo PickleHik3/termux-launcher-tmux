@@ -115,6 +115,16 @@ temp_icon() {
 	}'
 }
 
+fmt_temp() {
+	awk -v v="${1:-0}" 'BEGIN { printf "%.0f°", v }'
+}
+
+inline_reading() {
+	fg="$1"
+	text="$2"
+	printf '#[fg=%s,bg=%s] / #[fg=%s,bg=%s]%s' "$inline_sep_fg" "$bg" "$fg" "$bg" "$text"
+}
+
 join_segment() {
 	part="$1"
 	[ -n "$part" ] || return 0
@@ -179,7 +189,7 @@ cpu_segment() {
 	if is_on "${TERMUX_LAUNCHER_TMUX_SHOW_CPU_TEMP:-off}"; then
 		temp="$(package_temp)"
 		if [ -n "$temp" ]; then
-			seg="${seg}#[fg=${temp_fg},bg=${bg}] $(temp_icon "$temp")$(awk -v v="$temp" 'BEGIN { printf "%.0f°C", v }')"
+			seg="${seg}$(inline_reading "$temp_fg" "$(temp_icon "$temp") $(fmt_temp "$temp")")"
 		fi
 	fi
 	printf '%s' "$seg"
@@ -206,7 +216,7 @@ battery_segment() {
 	if is_on "${TERMUX_LAUNCHER_TMUX_SHOW_BATTERY_TEMP:-off}"; then
 		temp="$(battery_temp)"
 		if [ -n "$temp" ]; then
-			seg="${seg}#[fg=${battery_temp_fg},bg=${bg}] $(temp_icon "$temp")$(awk -v v="$temp" 'BEGIN { printf "%.0f°C", v }')"
+			seg="${seg}$(inline_reading "$battery_temp_fg" "$(temp_icon "$temp") $(fmt_temp "$temp")")"
 		fi
 	fi
 	printf '%s' "$seg"

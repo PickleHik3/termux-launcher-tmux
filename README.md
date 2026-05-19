@@ -30,7 +30,7 @@ tmux source-file ~/.tmux.conf
 
 - tmux 3.6 or newer
 - a Nerd Font in Termux
-- Termux Launcher Material colors at `~/.termux/material-colors.sh`
+- Termux Launcher Material colors at `~/.termux/material-colors.sh` or `~/.termux/material-colors.properties`
 - optional helper commands on `PATH`:
   - `launcher-system-monitor`
   - `launcher-weather-widget`
@@ -50,6 +50,9 @@ set -g @termux-launcher-tmux-weather on
 set -g @termux-launcher-tmux-kew-status on
 set -g @termux-launcher-tmux-now-playing on
 
+# Weather display: compact shows "󰖔 37°"; condition shows "󰖔 37° Sunny".
+set -g @termux-launcher-tmux-weather-mode compact
+
 # Extra resource widgets default to "off".
 set -g @termux-launcher-tmux-storage-widget off
 set -g @termux-launcher-tmux-battery-widget off
@@ -67,6 +70,12 @@ set -g @termux-launcher-tmux-kew-status off
 set -g @termux-launcher-tmux-now-playing off
 ```
 
+Show the weather condition text:
+
+```tmux
+set -g @termux-launcher-tmux-weather-mode condition
+```
+
 Turn extra resource widgets on individually:
 
 ```tmux
@@ -81,26 +90,55 @@ The extra widgets read `launcherctl resources`. The network widget needs the `ne
 
 ## Controls
 
+The default prefix is `Ctrl+Space`. `Ctrl+b` is also available as a fallback.
+
+### Help And Reload
+
 | Key | Action |
 | --- | --- |
-| `Ctrl+Space` | tmux prefix |
-| `Ctrl+b` | fallback prefix |
-| `Alt+e` | show keybind reference popup |
-| `prefix q` | reload `~/.tmux.conf` |
-| `F12` | run `termux-reload-settings` |
-| `prefix h` / `prefix v` | split pane below / right |
-| `prefix x` | kill pane |
-| `Ctrl+Alt+Arrow` | select pane |
-| `Ctrl+Alt+Shift+Arrow` | resize pane |
-| `Alt+1` ... `Alt+9` | select window |
-| `Alt+Left` / `Alt+Right` | previous / next window |
-| `Alt+Shift+Left` / `Alt+Shift+Right` | move current window |
-| touch/click a window name | select that window |
-| `prefix c` / `prefix k` | new / kill window |
-| `prefix r` | rename window |
-| `Alt+Up` / `Alt+Down` | previous / next session |
-| `prefix Shift+c` / `prefix Shift+k` | new / kill session |
-| copy mode `v` / `y` | start selection / copy selection |
+| `Alt+e` | Show the keybind reference popup |
+| `prefix q` | Reload `~/.tmux.conf` |
+| `F12` | Reload Termux settings with `termux-reload-settings` |
+
+### Panes
+
+| Key | Action |
+| --- | --- |
+| `prefix h` | Split below, starting in the current pane path |
+| `prefix v` | Split right, starting in the current pane path |
+| `prefix x` | Kill the current pane |
+| `Ctrl+Alt+Arrow` | Move focus between panes |
+| `Ctrl+Alt+Shift+Arrow` | Resize the current pane |
+
+### Windows
+
+| Key | Action |
+| --- | --- |
+| `prefix c` | Create a new window in the current pane path |
+| `prefix k` | Kill the current window |
+| `prefix r` | Rename the current window |
+| `Alt+1` ... `Alt+9` | Jump to window 1 through 9 |
+| `Alt+Left` / `Alt+Right` | Previous / next window |
+| `Alt+Shift+Left` / `Alt+Shift+Right` | Move the current window left / right |
+| Touch/click a window name | Select that window |
+
+### Sessions
+
+| Key | Action |
+| --- | --- |
+| `prefix Shift+c` | Create a new session in the current pane path |
+| `prefix Shift+r` | Rename the current session |
+| `prefix Shift+k` | Kill the current session |
+| `Alt+Up` / `Alt+Down` | Previous / next session |
+| `prefix Shift+p` / `prefix Shift+n` | Previous / next session |
+
+### Copy Mode
+
+| Key | Action |
+| --- | --- |
+| `prefix [` | Enter copy mode |
+| `v` | Start selection |
+| `y` | Copy selection and leave copy mode |
 
 ## App Shortcut Examples
 
@@ -117,11 +155,11 @@ Change the app ids to match your `launcherctl apps` output.
 ## What It Does
 
 - Installs the Termux Launcher tmux keybinds and options: prefix, pane/window/session navigation, copy-mode keys, help popup, and `F12` settings reload.
-- Uses Termux Launcher's Material color exports.
+- Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
 - Shows a compact two-row tmux status bar for Android screens.
-- Shows `PRFX` and `COPY` state pills on the left.
-- Shows the current directory as a muted `~/...` path.
-- Shows CPU, RAM, and weather in a rounded right-side pill.
+- Shows session, prefix, and copy mode as elevated Material-style chips on the left.
+- Shows the current directory as a muted `~/...` path with conservative truncation.
+- Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in a rounded right-side chip.
 - Can optionally add storage, battery, network, CPU temperature, and battery temperature widgets.
 - Shows windows on the second row, with the focused window showing the active process name.
 - Shows `kew-now-playing` on the far right of the second row when it has content.
