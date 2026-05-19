@@ -44,6 +44,46 @@ window_inactive_fg=$on_surface_variant
 window_active_fg=$primary
 window_attention_fg=$tertiary
 
+option_on() {
+	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
+		off|OFF|false|FALSE|0|no|NO) return 1 ;;
+		*) return 0 ;;
+	esac
+}
+
+kew_status=''
+system_widgets=''
+weather_widget=''
+now_playing=''
+
+if option_on @termux-launcher-tmux-kew-status on; then
+	kew_status="#(kew-tmux-status)"
+fi
+
+if option_on @termux-launcher-tmux-system-widgets on; then
+	system_widgets="#[fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')"
+fi
+
+if option_on @termux-launcher-tmux-weather on; then
+	weather_widget="#[fg=${tertiary},bg=${widget_pill_bg}]#(launcher-weather-widget | tr -d '\n')"
+fi
+
+if option_on @termux-launcher-tmux-now-playing on; then
+	now_playing="#[align=right fg=${tertiary},bg=${surface},nobold]#(kew-now-playing | tr -d '\n')"
+fi
+
+if [ -n "$system_widgets" ] && [ -n "$weather_widget" ]; then
+	right_widgets="${system_widgets}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · ${weather_widget}"
+else
+	right_widgets="${system_widgets}${weather_widget}"
+fi
+
+if [ -n "$right_widgets" ]; then
+	right_pill="#[fg=${widget_pill_bg},bg=${surface}]${right_widgets}#[fg=${widget_pill_bg},bg=${surface}] "
+else
+	right_pill=''
+fi
+
 tmux set-option -g status-style "bg=${surface},fg=${on_surface}"
 tmux set-option -g mouse on
 tmux set-option mouse on
@@ -55,9 +95,9 @@ tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${widget_pill_bg},bg
 tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${surface}]#[fg=${prefix_fg},bg=${prefix_bg},bold] PRFX #[fg=${prefix_bg},bg=${surface}] "
 tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${surface}]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${surface}] "
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
-tmux set-option -g status-right "#(kew-tmux-status)#[fg=${secondary},bg=${surface}]#{?window_zoomed_flag,ZOOM ,}#[fg=${widget_pill_bg},bg=${surface}]#[fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${tertiary},bg=${widget_pill_bg}]#(launcher-weather-widget | tr -d '\n')#[fg=${widget_pill_bg},bg=${surface}] "
+tmux set-option -g status-right "${kew_status}#[fg=${secondary},bg=${surface}]#{?window_zoomed_flag,ZOOM ,}${right_pill}"
 tmux set-option -g status-format[0] "#[align=left range=left bg=${surface}]#{T:status-left}#[norange fg=${cwd_color},bg=${surface},nobold]#{=/36/...:#{s|${HOME}|~|:pane_current_path}}#[align=right range=right bg=${surface}]#{T:status-right}#[norange]"
-tmux set-option -g status-format[1] "#[list=on align=centre bg=${surface}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]#[align=right fg=${tertiary},bg=${surface},nobold]#(kew-now-playing | tr -d '\n')"
+tmux set-option -g status-format[1] "#[list=on align=centre bg=${surface}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]${now_playing}"
 tmux set-option -gu status-format[2]
 tmux set-option -g status 2
 tmux set-option status 2

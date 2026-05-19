@@ -48,6 +48,7 @@ tmux bind-key -n M-Left select-window -t -1
 tmux bind-key -n M-Right select-window -t +1
 tmux bind-key -n M-S-Left swap-window -t -1 \; select-window -t -1
 tmux bind-key -n M-S-Right swap-window -t +1 \; select-window -t +1
+tmux bind-key -n MouseDown1Status select-window -t =
 
 # Session controls
 tmux bind-key R command-prompt -I "#S" "rename-session -- '%%'"
@@ -79,14 +80,3 @@ tmux set-option -sg escape-time 10
 
 tmux set-window-option -g automatic-rename on
 tmux set-window-option -g automatic-rename-format '#{b:pane_current_path}'
-
-# Launcher app shortcuts
-tmux bind-key -n M-w run-shell 'tmux display-message "Opening WhatsApp"; launcherctl launch whatsapp >/dev/null 2>&1 || tmux display-message "Launch failed: WhatsApp"'
-tmux bind-key -n M-k run-shell 'tmux display-message "Opening komikku"; launcherctl launch komikku >/dev/null 2>&1 || tmux display-message "Launch failed: komikku"'
-tmux bind-key -n M-b run-shell 'tmux display-message "Opening cromite"; launcherctl launch cromite >/dev/null 2>&1 || tmux display-message "Launch failed: cromite"'
-tmux bind-key -n M-g run-shell 'tmux display-message "Opening gallery"; launcherctl launch gallery >/dev/null 2>&1 || tmux display-message "Launch failed: gallery"'
-tmux bind-key -n M-s run-shell 'tmux display-message "Opening settings"; launcherctl launch settings >/dev/null 2>&1 || tmux display-message "Launch failed: settings"'
-tmux bind-key -n M-r run-shell 'tmux display-message "Opening reddit"; launcherctl launch reddit >/dev/null 2>&1 || tmux display-message "Launch failed: reddit"'
-tmux bind-key -n M-i run-shell 'tmux display-message "Opening instagram"; launcherctl launch instagram >/dev/null 2>&1 || tmux display-message "Launch failed: instagram"'
-tmux bind-key -n M-f run-shell 'tmux display-message "Opening solidexplorer"; launcherctl launch solidexplorer >/dev/null 2>&1 || tmux display-message "Launch failed: solidexplorer"'
-tmux bind-key -n M-y run-shell 'tmux display-message "Opening youtube"; launcherctl launch youtube >/dev/null 2>&1 || tmux display-message "Launch failed: youtube"'

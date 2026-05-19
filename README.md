@@ -39,9 +39,64 @@ tmux source-file ~/.tmux.conf
 
 The helper commands are documented in the Termux Launcher [tmux status setup](https://github.com/PickleHik3/termux-launcher/blob/dev/docs/en/Launcher_Tmux_Status_Setup.md).
 
+## User Options
+
+Set any of these before the TPM line in `~/.tmux.conf`, then reload tmux.
+
+```tmux
+# Defaults are all "on".
+set -g @termux-launcher-tmux-system-widgets on
+set -g @termux-launcher-tmux-weather on
+set -g @termux-launcher-tmux-kew-status on
+set -g @termux-launcher-tmux-now-playing on
+```
+
+Turn widgets off individually:
+
+```tmux
+set -g @termux-launcher-tmux-system-widgets off
+set -g @termux-launcher-tmux-weather off
+set -g @termux-launcher-tmux-kew-status off
+set -g @termux-launcher-tmux-now-playing off
+```
+
+## Controls
+
+| Key | Action |
+| --- | --- |
+| `C-Space` | tmux prefix |
+| `C-b` | fallback prefix |
+| `prefix q` | reload `~/.tmux.conf` |
+| `F12` | run `termux-reload-settings` |
+| `prefix h` / `prefix v` | split pane vertically / horizontally |
+| `prefix x` | kill pane |
+| `C-M-Arrow` | select pane |
+| `C-M-S-Arrow` | resize pane |
+| `M-1` ... `M-9` | select window |
+| `M-Left` / `M-Right` | previous / next window |
+| `M-S-Left` / `M-S-Right` | move current window |
+| touch/click a window name | select that window |
+| `prefix c` / `prefix k` | new / kill window |
+| `prefix r` | rename window |
+| `M-Up` / `M-Down` | previous / next session |
+| `prefix C` / `prefix K` | new / kill session |
+| copy mode `v` / `y` | start selection / copy selection |
+
+## App Shortcut Examples
+
+The plugin does not install app-launch shortcuts by default. Add only the shortcuts you want to your own `~/.tmux.conf`:
+
+```tmux
+bind -n M-w run-shell 'tmux display-message "Opening WhatsApp"; launcherctl launch whatsapp >/dev/null 2>&1 || tmux display-message "Launch failed: WhatsApp"'
+bind -n M-y run-shell 'tmux display-message "Opening YouTube"; launcherctl launch youtube >/dev/null 2>&1 || tmux display-message "Launch failed: YouTube"'
+bind -n M-b run-shell 'tmux display-message "Opening Browser"; launcherctl launch cromite >/dev/null 2>&1 || tmux display-message "Launch failed: Browser"'
+```
+
+Change the app ids to match your `launcherctl apps` output.
+
 ## What It Does
 
-- Installs the Termux Launcher tmux workflow keybinds: prefix, pane/window/session navigation, copy-mode keys, app launcher shortcuts, and `F12` settings reload.
+- Installs the Termux Launcher tmux workflow keybinds: prefix, pane/window/session navigation, copy-mode keys, and `F12` settings reload.
 - Uses Termux Launcher's Material color exports.
 - Shows a compact two-row tmux status bar for Android screens.
 - Shows `PRFX` and `COPY` state pills on the left.
