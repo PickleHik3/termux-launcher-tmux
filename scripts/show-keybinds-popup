@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+set -eu
+
+[ -n "${TMUX:-}" ] || exit 0
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+title="$(tmux show-option -gqv '@termux-launcher-tmux-keybinds-title' 2>/dev/null || true)"
+[ -n "$title" ] || title="    Termux Launcher Tmux Keys    "
+
+client_w="$(tmux display-message -p '#{client_width}')"
+client_h="$(tmux display-message -p '#{client_height}')"
+width=$((client_w - 2))
+height=19
+
+[ "$width" -gt 92 ] && width=92
+[ "$width" -lt 56 ] && width=56
+if [ "$height" -gt $((client_h - 2)) ]; then
+	height=$((client_h - 2))
+fi
+[ "$height" -lt 14 ] && height=14
+
+tmux display-popup \
+	-E \
+	-x C \
+	-y C \
+	-w "$width" \
+	-h "$height" \
+	-T "$title" \
+	"TERMUX_LAUNCHER_TMUX_POPUP_WIDTH=$width TERMUX_LAUNCHER_TMUX_POPUP_HEIGHT=$height $SCRIPT_DIR/show-keybinds-view"

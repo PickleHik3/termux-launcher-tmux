@@ -66,9 +66,10 @@ set -g @termux-launcher-tmux-now-playing off
 | --- | --- |
 | `C-Space` | tmux prefix |
 | `C-b` | fallback prefix |
+| `prefix h` | show keybind reference popup |
 | `prefix q` | reload `~/.tmux.conf` |
 | `F12` | run `termux-reload-settings` |
-| `prefix h` / `prefix v` | split pane vertically / horizontally |
+| `prefix H` / `prefix v` | split pane below / right |
 | `prefix x` | kill pane |
 | `C-M-Arrow` | select pane |
 | `C-M-S-Arrow` | resize pane |
@@ -96,7 +97,7 @@ Change the app ids to match your `launcherctl apps` output.
 
 ## What It Does
 
-- Installs the Termux Launcher tmux workflow keybinds: prefix, pane/window/session navigation, copy-mode keys, and `F12` settings reload.
+- Installs the Termux Launcher tmux keybinds and options: prefix, pane/window/session navigation, copy-mode keys, help popup, and `F12` settings reload.
 - Uses Termux Launcher's Material color exports.
 - Shows a compact two-row tmux status bar for Android screens.
 - Shows `PRFX` and `COPY` state pills on the left.

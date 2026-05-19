@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
 # Prefix
 tmux set-option -g prefix C-Space
 tmux set-option -g prefix2 C-b
@@ -8,6 +10,7 @@ tmux bind-key C-Space send-prefix
 # Reload and Termux settings
 tmux bind-key q source-file "$HOME/.tmux.conf" \; display "Configuration reloaded"
 tmux bind-key F12 run-shell 'termux-reload-settings >/dev/null 2>&1; tmux display-message "Termux settings reloaded"'
+tmux bind-key h run-shell "$SCRIPT_DIR/show-keybinds-popup"
 
 # Copy mode
 tmux set-window-option -g mode-keys vi
@@ -15,7 +18,7 @@ tmux bind-key -T copy-mode-vi v send -X begin-selection
 tmux bind-key -T copy-mode-vi y send -X copy-selection-and-cancel
 
 # Pane controls
-tmux bind-key h split-window -v -c "#{pane_current_path}"
+tmux bind-key H split-window -v -c "#{pane_current_path}"
 tmux bind-key v split-window -h -c "#{pane_current_path}"
 tmux bind-key x kill-pane
 

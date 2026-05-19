@@ -1,0 +1,114 @@
+#!/usr/bin/env sh
+set -eu
+
+reset="$(printf '\033[0m')"
+primary="$(printf '\033[38;5;117m')"
+secondary="$(printf '\033[38;5;114m')"
+tertiary="$(printf '\033[38;5;221m')"
+muted="$(printf '\033[38;5;245m')"
+
+if [ -r "$HOME/.termux/material-colors.sh" ]; then
+	# shellcheck disable=SC1091
+	. "$HOME/.termux/material-colors.sh"
+	[ -n "${TERMUX_MATERIAL_PRIMARY:-}" ] && primary="$(printf '\033[38;2;%s;%s;%sm' "$((0x$(printf '%s' "$TERMUX_MATERIAL_PRIMARY" | cut -c 2-3)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_PRIMARY" | cut -c 4-5)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_PRIMARY" | cut -c 6-7)))")"
+	[ -n "${TERMUX_MATERIAL_SECONDARY:-}" ] && secondary="$(printf '\033[38;2;%s;%s;%sm' "$((0x$(printf '%s' "$TERMUX_MATERIAL_SECONDARY" | cut -c 2-3)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_SECONDARY" | cut -c 4-5)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_SECONDARY" | cut -c 6-7)))")"
+	[ -n "${TERMUX_MATERIAL_TERTIARY:-}" ] && tertiary="$(printf '\033[38;2;%s;%s;%sm' "$((0x$(printf '%s' "$TERMUX_MATERIAL_TERTIARY" | cut -c 2-3)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_TERTIARY" | cut -c 4-5)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_TERTIARY" | cut -c 6-7)))")"
+	[ -n "${TERMUX_MATERIAL_ON_SURFACE_VARIANT:-}" ] && muted="$(printf '\033[38;2;%s;%s;%sm' "$((0x$(printf '%s' "$TERMUX_MATERIAL_ON_SURFACE_VARIANT" | cut -c 2-3)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_ON_SURFACE_VARIANT" | cut -c 4-5)))" "$((0x$(printf '%s' "$TERMUX_MATERIAL_ON_SURFACE_VARIANT" | cut -c 6-7)))")"
+fi
+
+client_w="$(tmux display-message -p '#{client_width}')"
+popup_w="${TERMUX_LAUNCHER_TMUX_POPUP_WIDTH:-$client_w}"
+popup_h="${TERMUX_LAUNCHER_TMUX_POPUP_HEIGHT:-0}"
+
+cleanup() {
+	printf '\033[?25h'
+	stty sane 2>/dev/null || true
+}
+trap cleanup EXIT HUP INT TERM
+printf '\033[?25l'
+printf '\033[H\033[2J'
+
+pad_text() {
+	text="$1"
+	width="$2"
+	len=${#text}
+	if [ "$len" -gt "$width" ]; then
+		text="$(printf '%s' "$text" | cut -c "1-$width")"
+		len=${#text}
+	fi
+	printf '%s' "$text"
+	while [ "$len" -lt "$width" ]; do
+		printf ' '
+		len=$((len + 1))
+	done
+}
+
+format_cell() {
+	action="$1"
+	bind="$2"
+	cell_w="$3"
+	action_w="$4"
+	bind_w=$((cell_w - action_w - 2))
+	[ "$bind_w" -lt 4 ] && bind_w=4
+	action_p="$(pad_text "$action" "$action_w")"
+	bind_p="$(pad_text "$bind" "$bind_w")"
+	printf '%s%s%s %s%s%s' \
+		"$tertiary" "$action_p" "$reset" \
+		"$secondary" "$bind_p" "$reset"
+}
+
+print_titles() {
+	left="$1"
+	right="$2"
+	left_p="$(pad_text "$left" "$col_w")"
+	right_p="$(pad_text "$right" "$col_w")"
+	printf ' %s%s%s  %s%s%s\n' \
+		"$primary" "$left_p" "$reset" \
+		"$primary" "$right_p" "$reset"
+}
+
+print_row() {
+	l_action="$1"
+	l_bind="$2"
+	r_action="$3"
+	r_bind="$4"
+	l_cell="$(format_cell "$l_action" "$l_bind" "$col_w" "$action_w")"
+	r_cell="$(format_cell "$r_action" "$r_bind" "$col_w" "$action_w")"
+	printf ' %s  %s\n' "$l_cell" "$r_cell"
+}
+
+usable_w=$((popup_w - 4))
+[ "$usable_w" -lt 44 ] && usable_w=44
+col_w=$(((usable_w - 2) / 2))
+[ "$col_w" -lt 21 ] && col_w=21
+action_w=11
+[ "$col_w" -lt 25 ] && action_w=10
+[ "$col_w" -lt 22 ] && action_w=9
+
+print_titles "Windows" "Panes"
+print_row "New" "Prefix + c" "Below" "Prefix + H"
+print_row "Rename" "Prefix + r" "Right" "Prefix + v"
+print_row "Close" "Prefix + k" "Close" "Prefix + x"
+print_row "Jump" "Alt + 1..9" "Focus" "C-M + Arrows"
+print_row "Cycle" "Alt + L/R" "Resize" "C-M-S + Arrows"
+print_row "Touch" "window name" "" ""
+print_row "Move" "Alt+Shift L/R" "" ""
+printf '\n'
+print_titles "Sessions" "General"
+print_row "New" "Prefix + C" "Help" "Prefix + h"
+print_row "Rename" "Prefix + R" "Reload" "Prefix + q"
+print_row "Close" "Prefix + K" "Settings" "F12"
+print_row "Cycle" "Alt + Up/Dn" "Prefix" "C-Space"
+print_row "Prev/Next" "Prefix + P/N" "Copy" "Prefix + ["
+
+if [ "$popup_h" -gt 3 ] 2>/dev/null; then
+	hint_row=$((popup_h - 2))
+	[ "$hint_row" -lt 1 ] && hint_row=1
+	printf '\033[%s;2H\033[K' "$hint_row"
+else
+	printf '\n'
+fi
+printf '%sAny key to close%s' "$muted" "$reset"
+
+stty -echo raw
+dd bs=1 count=1 >/dev/null 2>&1 || true
