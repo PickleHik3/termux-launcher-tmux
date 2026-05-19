@@ -60,6 +60,26 @@ percent() {
 }
 
 case "$mode" in
+	extras)
+		shift || true
+		out=""
+		for item in "$@"; do
+			part="$("$0" "$item" 2>/dev/null || true)"
+			[ -n "$part" ] || continue
+			if [ -n "$out" ]; then
+				out="${out}#[fg=${TERMUX_LAUNCHER_TMUX_SEPARATOR_FG:-default},bg=${TERMUX_LAUNCHER_TMUX_WIDGET_BG:-default}] · ${part}"
+			else
+				out="$part"
+			fi
+		done
+		printf '%s' "$out"
+		;;
+	extras-prefixed)
+		shift || true
+		out="$("$0" extras "$@" 2>/dev/null || true)"
+		[ -n "$out" ] || exit 0
+		printf '#[fg=%s,bg=%s] · %s' "${TERMUX_LAUNCHER_TMUX_SEPARATOR_FG:-default}" "${TERMUX_LAUNCHER_TMUX_WIDGET_BG:-default}" "$out"
+		;;
 	storage)
 		item="$(printf '%s' "$json" | jq -c '(.storage // [] | map(select(.label == "shared"))[0]) // (.storage // [] | map(select(.label == "data"))[0]) // empty')"
 		[ -n "$item" ] || exit 0
@@ -78,6 +98,15 @@ case "$mode" in
 		[ "$level" -gt 100 ] && level=100
 		icon="$(battery_icon "$level" "$charging")"
 		printf '%s %s%%' "$icon" "$level"
+		;;
+	battery-with-temp)
+		battery="$("$0" battery 2>/dev/null || true)"
+		temp="$("$0" battery-temp 2>/dev/null || true)"
+		if [ -n "$battery" ] && [ -n "$temp" ]; then
+			printf '%s#[fg=%s,bg=%s] ∙ %s' "$battery" "${TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG:-default}" "${TERMUX_LAUNCHER_TMUX_WIDGET_BG:-default}" "$temp"
+		else
+			printf '%s%s' "$battery" "$temp"
+		fi
 		;;
 	network)
 		row="$(printf '%s' "$json" | jq -r '(.network // [] | map(select(.interface != "lo")) | sort_by((.rxBytes // 0) + (.txBytes // 0)) | last) // empty | [.interface, (.rxBytes // 0), (.txBytes // 0)] | @tsv' 2>/dev/null || true)"
@@ -108,6 +137,11 @@ case "$mode" in
 		temp="$(printf '%s' "$json" | jq -r '(.thermal // [] | map(select((.type | test("cpu|cpuss"; "i")) and (.tempC > -100) and (.tempC < 200))) | max_by(.tempC).tempC) // empty')"
 		[ -n "$temp" ] || exit 0
 		printf ' %s°C' "$(awk -v v="$temp" 'BEGIN { printf "%.0f", v }')"
+		;;
+	cpu-temp-inline)
+		temp="$("$0" cpu-temp 2>/dev/null || true)"
+		[ -n "$temp" ] || exit 0
+		printf '#[fg=%s,bg=%s] ∙ %s' "${TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG:-default}" "${TERMUX_LAUNCHER_TMUX_WIDGET_BG:-default}" "$temp"
 		;;
 	battery-temp)
 		temp="$(printf '%s' "$json" | jq -r '.battery.temperatureC // empty')"

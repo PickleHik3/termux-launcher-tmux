@@ -83,28 +83,28 @@ The extra widgets read `launcherctl resources`. The network widget needs the `ne
 
 | Key | Action |
 | --- | --- |
-| `C-Space` | tmux prefix |
-| `C-b` | fallback prefix |
+| `Ctrl+Space` | tmux prefix |
+| `Ctrl+b` | fallback prefix |
 | `Alt+e` | show keybind reference popup |
 | `prefix q` | reload `~/.tmux.conf` |
 | `F12` | run `termux-reload-settings` |
 | `prefix h` / `prefix v` | split pane below / right |
 | `prefix x` | kill pane |
-| `C-M-Arrow` | select pane |
-| `C-M-S-Arrow` | resize pane |
-| `M-1` ... `M-9` | select window |
-| `M-Left` / `M-Right` | previous / next window |
-| `M-S-Left` / `M-S-Right` | move current window |
+| `Ctrl+Alt+Arrow` | select pane |
+| `Ctrl+Alt+Shift+Arrow` | resize pane |
+| `Alt+1` ... `Alt+9` | select window |
+| `Alt+Left` / `Alt+Right` | previous / next window |
+| `Alt+Shift+Left` / `Alt+Shift+Right` | move current window |
 | touch/click a window name | select that window |
 | `prefix c` / `prefix k` | new / kill window |
 | `prefix r` | rename window |
-| `M-Up` / `M-Down` | previous / next session |
-| `prefix C` / `prefix K` | new / kill session |
+| `Alt+Up` / `Alt+Down` | previous / next session |
+| `prefix Shift+c` / `prefix Shift+k` | new / kill session |
 | copy mode `v` / `y` | start selection / copy selection |
 
 ## App Shortcut Examples
 
-The plugin does not install app-launch shortcuts by default. Add only the shortcuts you want to your own `~/.tmux.conf`:
+The plugin does not install app-launch shortcuts by default. Add only the shortcuts you want to your own `~/.tmux.conf`. In tmux config syntax, `M-` means `Alt+`.
 
 ```tmux
 bind -n M-w run-shell 'tmux display-message "Opening WhatsApp"; launcherctl launch whatsapp >/dev/null 2>&1 || tmux display-message "Launch failed: WhatsApp"'

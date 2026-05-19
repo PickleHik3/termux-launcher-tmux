@@ -56,13 +56,18 @@ system_widgets=''
 weather_widget=''
 now_playing=''
 extra_widgets=''
+extra_widget_modes=''
+cpu_temp_inline=''
 
 if option_on @termux-launcher-tmux-kew-status on; then
 	kew_status="#(kew-tmux-status)"
 fi
 
 if option_on @termux-launcher-tmux-system-widgets on; then
-	system_widgets="#[fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')"
+	if option_on @termux-launcher-tmux-cpu-temperature-widget off; then
+		cpu_temp_inline="#(TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${on_surface_variant}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${widget_pill_bg}' ${theme_dir}/resource-widget cpu-temp-inline | tr -d '\n')"
+	fi
+	system_widgets="#[fg=${primary},bg=${widget_pill_bg}]#(launcher-system-monitor cpu | tr -d '\n')#[fg=${error},bg=${widget_pill_bg}]${cpu_temp_inline}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · #[fg=${secondary},bg=${widget_pill_bg}]#(launcher-system-monitor ram | tr -d '\n')"
 fi
 
 if option_on @termux-launcher-tmux-weather on; then
@@ -73,33 +78,26 @@ if option_on @termux-launcher-tmux-now-playing on; then
 	now_playing="#[align=right fg=${tertiary},bg=${surface},nobold]#(kew-now-playing | tr -d '\n')"
 fi
 
-append_extra_widget() {
-	widget="$1"
-	if [ -n "$extra_widgets" ]; then
-		extra_widgets="${extra_widgets}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · ${widget}"
-	else
-		extra_widgets="$widget"
-	fi
-}
-
 if option_on @termux-launcher-tmux-storage-widget off; then
-	append_extra_widget "#[fg=${secondary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget storage | tr -d '\n')"
+	extra_widget_modes="${extra_widget_modes} storage"
 fi
 
 if option_on @termux-launcher-tmux-battery-widget off; then
-	append_extra_widget "#[fg=${primary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget battery | tr -d '\n')"
+	if option_on @termux-launcher-tmux-battery-temperature-widget off; then
+		extra_widget_modes="${extra_widget_modes} battery-with-temp"
+	else
+		extra_widget_modes="${extra_widget_modes} battery"
+	fi
+elif option_on @termux-launcher-tmux-battery-temperature-widget off; then
+	extra_widget_modes="${extra_widget_modes} battery-temp"
 fi
 
 if option_on @termux-launcher-tmux-network-widget off; then
-	append_extra_widget "#[fg=${tertiary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget network | tr -d '\n')"
+	extra_widget_modes="${extra_widget_modes} network"
 fi
 
-if option_on @termux-launcher-tmux-cpu-temperature-widget off; then
-	append_extra_widget "#[fg=${error},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget cpu-temp | tr -d '\n')"
-fi
-
-if option_on @termux-launcher-tmux-battery-temperature-widget off; then
-	append_extra_widget "#[fg=${tertiary},bg=${widget_pill_bg}]#(${theme_dir}/resource-widget battery-temp | tr -d '\n')"
+if [ -n "$extra_widget_modes" ]; then
+	extra_widgets="#[fg=${secondary},bg=${widget_pill_bg}]#(TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${on_surface_variant}' TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${on_surface_variant}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${widget_pill_bg}' ${theme_dir}/resource-widget extras ${extra_widget_modes} | tr -d '\n')"
 fi
 
 if [ -n "$system_widgets" ] && [ -n "$weather_widget" ]; then
@@ -108,10 +106,10 @@ else
 	right_widgets="${system_widgets}${weather_widget}"
 fi
 
-if [ -n "$right_widgets" ] && [ -n "$extra_widgets" ]; then
-	right_widgets="${right_widgets}#[fg=${on_surface_variant},bg=${widget_pill_bg}] · ${extra_widgets}"
-else
-	right_widgets="${right_widgets}${extra_widgets}"
+if [ -n "$right_widgets" ] && [ -n "$extra_widget_modes" ]; then
+	right_widgets="${right_widgets}#(TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${on_surface_variant}' TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${on_surface_variant}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${widget_pill_bg}' ${theme_dir}/resource-widget extras-prefixed ${extra_widget_modes} | tr -d '\n')"
+elif [ -n "$extra_widgets" ]; then
+	right_widgets="${extra_widgets}"
 fi
 
 if [ -n "$right_widgets" ]; then
