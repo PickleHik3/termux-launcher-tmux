@@ -121,7 +121,7 @@ else
 fi
 
 if [ -n "$right_widgets" ]; then
-	right_pill="#[fg=${chip_bg_high},bg=${bar_bg}]#[fg=${on_surface},bg=${chip_bg_high}] ${right_widgets} #[fg=${chip_bg_high},bg=${bar_bg}] "
+	right_pill="#[fg=${chip_bg_high},bg=${bar_bg},nobold]#[fg=${on_surface},bg=${chip_bg_high},nobold] ${right_widgets} #[fg=${chip_bg_high},bg=${bar_bg},nobold] "
 else
 	right_pill=''
 fi
@@ -137,9 +137,9 @@ tmux set-option -g status-left-length 72
 tmux set-option -g status-right-length 180
 tmux set-option -g window-status-separator ""
 
-tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${chip_bg_high},bg=${bar_bg}]#[fg=${session_fg},bg=${chip_bg_high},bold] #S #[fg=${chip_bg_high},bg=${bar_bg}] "
-tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${bar_bg}]#[fg=${prefix_fg},bg=${prefix_bg},bold] PREFIX #[fg=${prefix_bg},bg=${bar_bg}] "
-tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${bar_bg}]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${bar_bg}] "
+tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${chip_bg_high},bg=${bar_bg},nobold]#[fg=${session_fg},bg=${chip_bg_high},nobold] #S #[fg=${chip_bg_high},bg=${bar_bg},nobold] "
+tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${bar_bg},nobold]#[fg=${prefix_fg},bg=${prefix_bg},bold] PREFIX #[fg=${prefix_bg},bg=${bar_bg},nobold] "
+tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${bar_bg},nobold]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${bar_bg},nobold] "
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
 tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}${right_pill}"
 tmux set-option -g status-format[0] "#[align=left range=left bg=${bar_bg}]#{T:status-left}#[align=right range=right bg=${bar_bg}]#{T:status-right}#[norange]"
@@ -153,10 +153,10 @@ tmux unbind-key -n MouseUp1Status 2>/dev/null || true
 tmux unbind-key -n MouseDown1StatusRight 2>/dev/null || true
 tmux unbind-key -n MouseUp1StatusRight 2>/dev/null || true
 
-tmux set-window-option -g window-status-format "#[fg=${window_index_fg},bg=${bar_bg},nobold,noitalics,nounderscore] #I #[fg=${window_inactive_fg},bg=${bar_bg}]#W "
+tmux set-window-option -g window-status-format "#[fg=${window_index_fg},bg=${bar_bg},nobold,noitalics,nounderscore] #I #[fg=${window_inactive_fg},bg=${bar_bg},nobold]#W "
 tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${bar_bg},bold,noitalics,nounderscore] ▸ #I #{pane_current_command} "
-tmux set-window-option -g window-status-activity-style "fg=${window_attention_fg},bg=${bar_bg},bold"
-tmux set-window-option -g window-status-bell-style "fg=${error},bg=${error_container},bold"
+tmux set-window-option -g window-status-activity-style "fg=${window_attention_fg},bg=${bar_bg},nobold"
+tmux set-window-option -g window-status-bell-style "fg=${error},bg=${error_container},nobold"
 
 tmux set-option -g pane-border-style "fg=${outline_variant}"
 tmux set-option -g pane-active-border-style "fg=${primary}"
@@ -165,7 +165,7 @@ tmux set-option -g display-panes-active-colour "$primary"
 
 tmux set-option -g message-style "bg=${chip_bg_active},fg=${on_surface}"
 tmux set-option -g message-command-style "bg=${chip_bg_high},fg=${on_surface}"
-tmux set-option -g mode-style "bg=${primary},fg=${on_primary},bold"
+tmux set-option -g mode-style "bg=${primary},fg=${on_primary},nobold"
 tmux set-window-option -g clock-mode-colour "$primary"
 
 tmux set-option -g copy-mode-match-style "bg=${surface_variant},fg=${on_surface}"
