@@ -39,6 +39,7 @@ terminal_green=${TERMUX_MATERIAL_TERMINAL_COLOR10:-$primary}
 terminal_yellow=${TERMUX_MATERIAL_TERMINAL_COLOR11:-$secondary}
 terminal_blue=${TERMUX_MATERIAL_TERMINAL_COLOR12:-$tertiary}
 terminal_magenta=${TERMUX_MATERIAL_TERMINAL_COLOR13:-$tertiary}
+terminal_cyan=${TERMUX_MATERIAL_TERMINAL_COLOR14:-$on_surface}
 
 bar_bg=$surface
 chip_bg_high=$surface_container_high
@@ -55,7 +56,7 @@ window_active_fg=$primary
 window_attention_fg=$terminal_yellow
 window_index_fg=$secondary
 cpu_color=$primary
-ram_color=$on_surface
+ram_color=$terminal_cyan
 storage_color=$terminal_blue
 battery_color=$terminal_green
 temperature_color=$terminal_yellow
