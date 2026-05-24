@@ -99,7 +99,7 @@ The extra widgets read `launcherctl resources`.
 
 ### Rounded
 
-`rounded` is the default Material You theme. It uses the same two-row structure as `sleek`: one top status row plus a labeled pane-border row. The top row keeps rounded Material chips for the session and right-side widgets, while the pane-border label shows the current pane path/name in normal mode, `PRFX` in prefix mode, and `COPY` in copy mode.
+`rounded` is the default Material You theme. It uses two tmux status rows: the top row shows the session, prefix/copy chip, and right-side widgets; the second row shows the window list and now playing.
 
 ### Sleek
 
@@ -187,9 +187,9 @@ Change the app ids to match your `launcherctl apps` output.
 
 - Installs the Termux Launcher tmux keybinds and options: prefix, pane/window/session navigation, copy-mode keys, help popup, and `F12` settings reload.
 - Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
-- Defaults to the `rounded` theme, a compact Material chip theme for Android screens.
+- Defaults to the `rounded` theme, a compact two-status-row Material chip theme for Android screens.
 - Provides a `sleek` theme inspired by smux: one top status row plus a labeled pane-border row, default terminal background, command-based window labels, a solid Material session chip, and Material-colored text widgets without chip backgrounds.
-- Uses the same row model for both themes: one tmux status row for session/windows/widgets and one pane-border row for path, prefix, and copy indicators.
+- Keeps `rounded` as a two-status-row theme and `sleek` as a one-status-row plus pane-border theme.
 - Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in the active theme style.
 - Can optionally add storage, battery, CPU temperature, and battery temperature widgets.
 - Shows windows in the theme layout, with `sleek` using command-based labels such as `1:fish`.
