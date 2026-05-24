@@ -2,9 +2,10 @@
 
 Material You tmux workflow and theme for [Termux Launcher](https://github.com/PickleHik3/termux-launcher).
 
-| Rounded | Sleek |
-| --- | --- |
-| ![rounded theme screenshot](assets/screenshot.png) | ![sleek theme screenshot](assets/sleek-screenshot.png) |
+| Theme screenshots |
+| --- |
+| **Rounded**<br>![rounded theme screenshot](assets/screenshot.png) |
+| **Sleek**<br>![sleek theme screenshot](assets/sleek-screenshot.png) |
 
 ## Install With TPM
 
