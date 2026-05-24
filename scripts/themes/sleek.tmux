@@ -32,29 +32,32 @@ tertiary=${TERMUX_MATERIAL_TERTIARY:-${TERMUX_MATERIAL_TERMINAL_COLOR12:-blue}}
 error=${TERMUX_MATERIAL_ERROR:-${TERMUX_MATERIAL_TERMINAL_COLOR9:-red}}
 warning=${TERMUX_MATERIAL_TERMINAL_COLOR11:-yellow}
 terminal_green=${TERMUX_MATERIAL_TERMINAL_COLOR10:-green}
+terminal_yellow=${TERMUX_MATERIAL_TERMINAL_COLOR11:-yellow}
 terminal_blue=${TERMUX_MATERIAL_TERMINAL_COLOR12:-blue}
+terminal_magenta=${TERMUX_MATERIAL_TERMINAL_COLOR13:-magenta}
 terminal_cyan=${TERMUX_MATERIAL_TERMINAL_COLOR14:-$on_surface}
+terminal_bright_black=${TERMUX_MATERIAL_TERMINAL_COLOR8:-$on_surface_variant}
 
-muted=$on_surface_variant
-border=$primary
+muted=$terminal_bright_black
+border=$secondary
 separator_color=$secondary
 text=$on_surface
 subtle=$on_surface_variant
 session_bg=$primary
 session_fg=$on_primary
-prefix_fg=$tertiary
-copy_fg=$warning
+prefix_fg=$primary
+copy_fg=$terminal_yellow
 window_inactive_fg=$muted
-window_active_fg=$primary
+window_active_fg=$tertiary
 window_attention_fg=$warning
 window_index_fg=$secondary
 cpu_color=$primary
-ram_color=$terminal_cyan
+ram_color=$terminal_green
 storage_color=$terminal_blue
-battery_color=$terminal_green
-temperature_color=$warning
+battery_color=$terminal_cyan
+temperature_color=$terminal_yellow
 weather_color=$tertiary
-zoom_color=$primary
+zoom_color=$terminal_magenta
 
 option_on() {
 	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
@@ -147,11 +150,11 @@ tmux set-option -g pane-border-indicators off
 tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX , ↓ #{?@name,#{@name},#{b:pane_current_path}} }}"
 tmux set-option -g pane-border-status top
 tmux set-option -g display-panes-colour "$muted"
-tmux set-option -g display-panes-active-colour "$primary"
+tmux set-option -g display-panes-active-colour "$tertiary"
 
 tmux set-option -g message-style "bg=${bar_bg},fg=${text}"
 tmux set-option -g message-command-style "bg=${bar_bg},fg=${text}"
-tmux set-option -g mode-style "bg=${primary},fg=${on_primary},bold"
-tmux set-window-option -g clock-mode-colour "$primary"
-tmux set-option -g copy-mode-match-style "bg=default,fg=${warning}"
-tmux set-option -g copy-mode-current-match-style "bg=${primary},fg=${on_primary}"
+tmux set-option -g mode-style "bg=${tertiary},fg=${bar_bg},bold"
+tmux set-window-option -g clock-mode-colour "$tertiary"
+tmux set-option -g copy-mode-match-style "bg=default,fg=${terminal_yellow}"
+tmux set-option -g copy-mode-current-match-style "bg=${tertiary},fg=${bar_bg}"
