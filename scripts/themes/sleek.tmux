@@ -123,9 +123,9 @@ tmux set-option -g status-left-length 12
 tmux set-option -g status-right-length 42
 tmux set-option -g status-justify left
 tmux set-option -g window-status-separator ""
-tmux set-option -g status-left "#[fg=${session_fg},bg=${session_bg},bold] #S #[fg=${separator_color},bg=${bar_bg},nobold]"
+tmux set-option -g status-left "#[fg=${session_fg},bg=${session_bg},bold] #S"
 tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
-tmux set-option -g status-format[0] "#[bg=${bar_bg}]#[fg=${session_fg},bg=${session_bg},bold] #S #[fg=${separator_color},bg=${bar_bg},nobold]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index}]#{T:window-status-current-format}#[norange]}#[align=right bg=${bar_bg}]#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
+tmux set-option -g status-format[0] "#[bg=${bar_bg}]#[fg=${session_fg},bg=${session_bg},bold] #S #{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index}]#{T:window-status-current-format}#[norange]}#[align=right bg=${bar_bg}]#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
 tmux set-option -gu status-format[1]
 tmux set-option -gu status-format[2]
 
