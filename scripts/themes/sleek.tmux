@@ -118,7 +118,8 @@ else
 fi
 right_widgets="${right_widgets}${now_playing}"
 
-tmux set-option -g status on
+tmux set-option -g status 1
+tmux set-option status 1
 tmux set-option -g status-position top
 tmux set-option -g status-interval 5
 tmux set-option -g status-style "bg=${bar_bg},fg=${muted}"
@@ -131,6 +132,8 @@ tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_
 tmux set-option -g status-format[0] "#[bg=${bar_bg}]#[fg=${session_fg},bg=${session_bg},bold] #S #{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index}]#{T:window-status-current-format}#[norange]}#[align=right bg=${bar_bg}]#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
 tmux set-option -gu status-format[1]
 tmux set-option -gu status-format[2]
+tmux set-option -u status-format[1] 2>/dev/null || true
+tmux set-option -u status-format[2] 2>/dev/null || true
 
 tmux bind-key -n MouseDown1Status select-window -t =
 tmux unbind-key -n MouseUp1Status 2>/dev/null || true
