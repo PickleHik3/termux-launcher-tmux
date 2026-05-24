@@ -55,13 +55,16 @@ tmux bind-key -n MouseDown1Status select-window -t =
 
 # Session controls
 tmux bind-key R command-prompt -I "#S" "rename-session -- '%%'"
-tmux bind-key C new-session -c "#{pane_current_path}"
+tmux bind-key C run-shell "$SCRIPT_DIR/session-names new"
 tmux bind-key K kill-session
 tmux bind-key P switch-client -p
 tmux bind-key N switch-client -n
 
 tmux bind-key -n M-Up switch-client -p
 tmux bind-key -n M-Down switch-client -n
+
+"$SCRIPT_DIR/session-names" normalize-current
+tmux set-hook -g session-created "run-shell '$SCRIPT_DIR/session-names normalize-session \"#{hook_session_name}\"'"
 
 # General tmux defaults for Termux Launcher
 tmux set-option -g default-terminal "tmux-256color"

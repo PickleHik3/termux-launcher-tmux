@@ -92,6 +92,28 @@ set -g @termux-launcher-tmux-battery-temperature-widget on
 
 The extra widgets read `launcherctl resources`.
 
+## Themes
+
+### Rounded
+
+`rounded` is the default Material You theme. It uses a compact two-row status bar with elevated chips for session, prefix, copy mode, system widgets, weather, and now playing.
+
+### Sleek
+
+`sleek` is inspired by smux. It uses one top status row plus a labeled pane-border row:
+
+- the session widget is a solid Material-colored chip
+- windows show the active pane command, such as `1:fish`, instead of repeating the current path
+- CPU, RAM, weather, optional resource widgets, zoom, and now playing stay on the top-right as colored text without chip backgrounds
+- the pane-border label shows the current pane path/name in normal mode, `PRFX` in prefix mode, and `COPY` in copy mode
+- active windows, borders, prefix/copy indicators, widgets, copy mode, and messages use Material color roles from the current wallpaper
+
+The theme option is global:
+
+```tmux
+set -g @termux-launcher-tmux-theme sleek
+```
+
 ## Controls
 
 The default prefix is `Ctrl+Space`. `Ctrl+b` is also available as a fallback.
@@ -136,6 +158,8 @@ The default prefix is `Ctrl+Space`. `Ctrl+b` is also available as a fallback.
 | `Alt+Up` / `Alt+Down` | Previous / next session |
 | `prefix Shift+p` / `prefix Shift+n` | Previous / next session |
 
+Unnamed sessions are normalized to numeric names starting at `1`. A named autostart session such as `main` can coexist with `1`, `2`, and later numeric sessions.
+
 ### Copy Mode
 
 | Key | Action |
@@ -161,9 +185,10 @@ Change the app ids to match your `launcherctl apps` output.
 - Installs the Termux Launcher tmux keybinds and options: prefix, pane/window/session navigation, copy-mode keys, help popup, and `F12` settings reload.
 - Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
 - Defaults to the `rounded` theme, a compact two-row tmux status bar for Android screens.
-- Provides a `sleek` theme inspired by smux: one top status row plus a labeled pane-border row, default terminal background, simple `#I:#W` windows, and Material-colored text widgets without chip backgrounds.
+- Provides a `sleek` theme inspired by smux: one top status row plus a labeled pane-border row, default terminal background, command-based window labels, a solid Material session chip, and Material-colored text widgets without chip backgrounds.
 - In `rounded`, shows session, prefix, and copy mode as elevated Material-style chips on the left.
 - Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in the active theme style.
 - Can optionally add storage, battery, CPU temperature, and battery temperature widgets.
-- Shows windows from the left edge of the second row, with the focused window showing the active process name.
-- Shows the current `kew` track on the far right of the second row only while playback is active.
+- Shows windows in the theme layout, with `sleek` using command-based labels such as `1:fish`.
+- Normalizes unnamed sessions to `1`, `2`, and so on while preserving named sessions such as `main`.
+- Shows the current `kew` track in the active theme status area only while playback is active.

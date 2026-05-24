@@ -38,14 +38,14 @@ terminal_cyan=${TERMUX_MATERIAL_TERMINAL_COLOR14:-$on_surface}
 muted=$on_surface_variant
 border=$primary
 separator_color=$secondary
-accent=$error
 text=$on_surface
 subtle=$on_surface_variant
-session_fg=$secondary
+session_bg=$primary
+session_fg=$on_primary
 prefix_fg=$tertiary
 copy_fg=$warning
 window_inactive_fg=$muted
-window_active_fg=$accent
+window_active_fg=$primary
 window_attention_fg=$warning
 window_index_fg=$secondary
 cpu_color=$primary
@@ -123,9 +123,9 @@ tmux set-option -g status-left-length 12
 tmux set-option -g status-right-length 42
 tmux set-option -g status-justify left
 tmux set-option -g window-status-separator ""
-tmux set-option -g status-left "#[fg=${session_fg},bg=${bar_bg},nobold] #S #[fg=${separator_color},bg=${bar_bg},nobold]·"
+tmux set-option -g status-left "#[fg=${session_fg},bg=${session_bg},bold] #S #[fg=${separator_color},bg=${bar_bg},nobold]·"
 tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
-tmux set-option -g status-format[0] "#[bg=${bar_bg}]#[fg=${session_fg},bg=${bar_bg},nobold] #S #[fg=${separator_color},bg=${bar_bg},nobold]·#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index}]#{T:window-status-current-format}#[norange]}#[align=right bg=${bar_bg}]#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
+tmux set-option -g status-format[0] "#[bg=${bar_bg}]#[fg=${session_fg},bg=${session_bg},bold] #S #[fg=${separator_color},bg=${bar_bg},nobold]·#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index}]#{T:window-status-current-format}#[norange]}#[align=right bg=${bar_bg}]#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}#[fg=${text},bg=${bar_bg},nobold]${right_widgets}"
 tmux set-option -gu status-format[1]
 tmux set-option -gu status-format[2]
 
@@ -134,11 +134,11 @@ tmux unbind-key -n MouseUp1Status 2>/dev/null || true
 tmux unbind-key -n MouseDown1StatusRight 2>/dev/null || true
 tmux unbind-key -n MouseUp1StatusRight 2>/dev/null || true
 
-tmux set-window-option -g window-status-format "#[fg=${window_index_fg},bg=${bar_bg},nobold,noitalics,nounderscore] #I#[fg=${window_inactive_fg},bg=${bar_bg},nobold]:#W "
-tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${bar_bg},bold,noitalics,nounderscore] #I:#W "
-tmux set-window-option -g window-status-current-style "fg=${accent},bg=${bar_bg},bold"
+tmux set-window-option -g window-status-format "#[fg=${window_index_fg},bg=${bar_bg},nobold,noitalics,nounderscore] #I#[fg=${window_inactive_fg},bg=${bar_bg},nobold]:#{pane_current_command} "
+tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${bar_bg},bold,noitalics,nounderscore] #I:#{pane_current_command} "
+tmux set-window-option -g window-status-current-style "fg=${window_active_fg},bg=${bar_bg},bold"
 tmux set-window-option -g window-status-activity-style "fg=${warning},bg=${bar_bg},nobold"
-tmux set-window-option -g window-status-bell-style "fg=${accent},bg=${bar_bg},bold"
+tmux set-window-option -g window-status-bell-style "fg=${error},bg=${bar_bg},bold"
 
 tmux set-option -g pane-border-style "fg=#{?#{==:#{client_key_table},prefix},${prefix_fg},${border}}"
 tmux set-option -g pane-active-border-style "fg=#{?pane_in_mode,${copy_fg},#{?#{==:#{client_key_table},prefix},${prefix_fg},${border}}}"
@@ -147,11 +147,11 @@ tmux set-option -g pane-border-indicators off
 tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX , ↓ #{?@name,#{@name},#{b:pane_current_path}} }}"
 tmux set-option -g pane-border-status top
 tmux set-option -g display-panes-colour "$muted"
-tmux set-option -g display-panes-active-colour "$accent"
+tmux set-option -g display-panes-active-colour "$primary"
 
 tmux set-option -g message-style "bg=${bar_bg},fg=${text}"
 tmux set-option -g message-command-style "bg=${bar_bg},fg=${text}"
-tmux set-option -g mode-style "bg=${accent},fg=default,bold"
-tmux set-window-option -g clock-mode-colour "$accent"
+tmux set-option -g mode-style "bg=${primary},fg=${on_primary},bold"
+tmux set-window-option -g clock-mode-colour "$primary"
 tmux set-option -g copy-mode-match-style "bg=default,fg=${warning}"
-tmux set-option -g copy-mode-current-match-style "bg=${accent},fg=default"
+tmux set-option -g copy-mode-current-match-style "bg=${primary},fg=${on_primary}"
