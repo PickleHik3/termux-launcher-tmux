@@ -42,15 +42,17 @@ terminal_magenta=${TERMUX_MATERIAL_TERMINAL_COLOR13:-$tertiary}
 terminal_cyan=${TERMUX_MATERIAL_TERMINAL_COLOR14:-$on_surface}
 
 bar_bg=$surface
-chip_bg_high=$surface_container_high
-chip_bg_active=$surface_container_highest
+chip_bg=$surface_container_high
+chip_bg_high=$surface_container_highest
+chip_bg_active=$surface_variant
 separator_color=$outline_variant
 subtle_fg=$on_surface_variant
-prefix_bg=$primary
-prefix_fg=$on_primary
+prefix_bg=$tertiary
+prefix_fg=$surface
 copy_bg=$terminal_yellow
 copy_fg=$surface
-session_fg=$on_surface
+session_bg=$primary
+session_fg=$on_primary
 window_inactive_fg=$subtle_fg
 window_active_fg=$primary
 window_attention_fg=$terminal_yellow
@@ -87,7 +89,7 @@ fi
 if option_on @termux-launcher-tmux-weather on; then
 	weather_mode="$(tmux show-option -gqv @termux-launcher-tmux-weather-mode 2>/dev/null || printf 'compact')"
 	[ -n "$weather_mode" ] || weather_mode=compact
-	weather_widget="#[fg=${weather_color},bg=${chip_bg_high}]#(TERMUX_LAUNCHER_TMUX_WEATHER_MODE='${weather_mode}' ${theme_dir}/weather-widget | tr -d '\n')"
+	weather_widget="#[fg=${weather_color},bg=${chip_bg}]#(TERMUX_LAUNCHER_TMUX_WEATHER_MODE='${weather_mode}' ${theme_dir}/weather-widget | tr -d '\n')"
 fi
 
 if option_on @termux-launcher-tmux-now-playing on; then
@@ -112,17 +114,17 @@ if option_on @termux-launcher-tmux-battery-temperature-widget off; then
 fi
 
 if [ "$show_system_widgets" = on ] || [ "$show_storage_widget" = on ] || [ "$show_battery_widget" = on ] || [ "$show_cpu_temp_widget" = on ] || [ "$show_battery_temp_widget" = on ]; then
-	resource_widgets="#(TERMUX_LAUNCHER_TMUX_SHOW_SYSTEM='${show_system_widgets}' TERMUX_LAUNCHER_TMUX_SHOW_STORAGE='${show_storage_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY='${show_battery_widget}' TERMUX_LAUNCHER_TMUX_SHOW_CPU_TEMP='${show_cpu_temp_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY_TEMP='${show_battery_temp_widget}' TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${chip_bg_high}' TERMUX_LAUNCHER_TMUX_CPU_FG='${cpu_color}' TERMUX_LAUNCHER_TMUX_RAM_FG='${ram_color}' TERMUX_LAUNCHER_TMUX_STORAGE_FG='${storage_color}' TERMUX_LAUNCHER_TMUX_BATTERY_FG='${battery_color}' TERMUX_LAUNCHER_TMUX_CPU_TEMP_FG='${temperature_color}' TERMUX_LAUNCHER_TMUX_BATTERY_TEMP_FG='${temperature_color}' ${theme_dir}/resource-widget right | tr -d '\n')"
+	resource_widgets="#(TERMUX_LAUNCHER_TMUX_SHOW_SYSTEM='${show_system_widgets}' TERMUX_LAUNCHER_TMUX_SHOW_STORAGE='${show_storage_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY='${show_battery_widget}' TERMUX_LAUNCHER_TMUX_SHOW_CPU_TEMP='${show_cpu_temp_widget}' TERMUX_LAUNCHER_TMUX_SHOW_BATTERY_TEMP='${show_battery_temp_widget}' TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_INLINE_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_WIDGET_BG='${chip_bg}' TERMUX_LAUNCHER_TMUX_CPU_FG='${cpu_color}' TERMUX_LAUNCHER_TMUX_RAM_FG='${ram_color}' TERMUX_LAUNCHER_TMUX_STORAGE_FG='${storage_color}' TERMUX_LAUNCHER_TMUX_BATTERY_FG='${battery_color}' TERMUX_LAUNCHER_TMUX_CPU_TEMP_FG='${temperature_color}' TERMUX_LAUNCHER_TMUX_BATTERY_TEMP_FG='${temperature_color}' ${theme_dir}/resource-widget right | tr -d '\n')"
 fi
 
 if [ -n "$resource_widgets" ] && [ -n "$weather_widget" ]; then
-	right_widgets="${resource_widgets}#[fg=${separator_color},bg=${chip_bg_high}] · ${weather_widget}"
+	right_widgets="${resource_widgets}#[fg=${separator_color},bg=${chip_bg}] · ${weather_widget}"
 else
 	right_widgets="${resource_widgets}${weather_widget}"
 fi
 
 if [ -n "$right_widgets" ]; then
-	right_pill="#[fg=${chip_bg_high},bg=${bar_bg},nobold]#[fg=${on_surface},bg=${chip_bg_high},nobold] ${right_widgets} #[fg=${chip_bg_high},bg=${bar_bg},nobold] "
+	right_pill="#[fg=${chip_bg},bg=${bar_bg},nobold]#[fg=${on_surface},bg=${chip_bg},nobold] ${right_widgets} #[fg=${chip_bg},bg=${bar_bg},nobold] "
 else
 	right_pill=''
 fi
@@ -138,7 +140,7 @@ tmux set-option -g status-left-length 72
 tmux set-option -g status-right-length 180
 tmux set-option -g window-status-separator ""
 
-tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${chip_bg_high},bg=${bar_bg},nobold]#[fg=${session_fg},bg=${chip_bg_high},nobold] #S #[fg=${chip_bg_high},bg=${bar_bg},nobold] "
+tmux set-option -g @termux-launcher-tmux-left-normal " #[fg=${session_bg},bg=${bar_bg},nobold]#[fg=${session_fg},bg=${session_bg},bold] #S #[fg=${session_bg},bg=${bar_bg},nobold] "
 tmux set-option -g @termux-launcher-tmux-left-prefix " #[fg=${prefix_bg},bg=${bar_bg},nobold]#[fg=${prefix_fg},bg=${prefix_bg},bold] PREFIX #[fg=${prefix_bg},bg=${bar_bg},nobold] "
 tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${bar_bg},nobold]#[fg=${copy_fg},bg=${copy_bg},bold] COPY #[fg=${copy_bg},bg=${bar_bg},nobold] "
 tmux set-option -g status-left "#{E:@termux-launcher-tmux-left-normal}"
@@ -161,11 +163,11 @@ tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg}
 tmux set-window-option -g window-status-activity-style "fg=${window_attention_fg},bg=${bar_bg},nobold"
 tmux set-window-option -g window-status-bell-style "fg=${error},bg=${error_container},nobold"
 
-tmux set-option -g pane-border-style "fg=#{?#{==:#{client_key_table},prefix},${prefix_bg},${outline_variant}}"
-tmux set-option -g pane-active-border-style "fg=#{?pane_in_mode,${copy_bg},#{?#{==:#{client_key_table},prefix},${prefix_bg},${primary}}}"
+tmux set-option -g pane-border-style "fg=#{?client_prefix,${prefix_bg},${outline_variant}}"
+tmux set-option -g pane-active-border-style "fg=#{?pane_in_mode,${copy_bg},#{?client_prefix,${prefix_bg},${primary}}}"
 tmux set-option -g pane-border-lines heavy
 tmux set-option -g pane-border-indicators off
-tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX , ↓ #{?@name,#{@name},#{b:pane_current_path}} }}"
+tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?client_prefix, PRFX , ↓ #{?@name,#{@name},#{b:pane_current_path}} }}"
 tmux set-option -g pane-border-status top
 tmux set-option -g display-panes-colour "$secondary"
 tmux set-option -g display-panes-active-colour "$primary"
