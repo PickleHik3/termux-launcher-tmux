@@ -148,8 +148,8 @@ tmux set-option -gu status-format[1]
 tmux set-option -gu status-format[2]
 tmux set-option -u status-format[1] 2>/dev/null || true
 tmux set-option -u status-format[2] 2>/dev/null || true
-tmux set-option -g status 1
-tmux set-option status 1
+tmux set-option -g status on
+tmux set-option status on
 
 tmux bind-key -n MouseDown1Status select-window -t =
 tmux unbind-key -n MouseUp1Status 2>/dev/null || true

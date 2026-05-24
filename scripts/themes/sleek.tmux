@@ -118,8 +118,8 @@ else
 fi
 right_widgets="${right_widgets}${now_playing}"
 
-tmux set-option -g status 1
-tmux set-option status 1
+tmux set-option -g status on
+tmux set-option status on
 tmux set-option -g status-position top
 tmux set-option -g status-interval 5
 tmux set-option -g status-style "bg=${bar_bg},fg=${muted}"
