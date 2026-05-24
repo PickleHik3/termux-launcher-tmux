@@ -65,13 +65,19 @@ tmux bind-key -n M-Down switch-client -n
 
 # General tmux defaults for Termux Launcher
 tmux set-option -g default-terminal "tmux-256color"
-tmux set-option -ag terminal-overrides ",*:RGB"
+tmux set-option -g terminal-overrides ",*:RGB"
+tmux set-option -g terminal-features "xterm*:RGB,xterm*:sixel,tmux*:RGB,screen*:RGB"
+tmux set-environment -g LANG "${LANG:-en_US.UTF-8}"
+tmux set-environment -g LC_CTYPE "C.UTF-8"
 tmux set-option -g mouse on
 tmux set-option -g base-index 1
 tmux set-window-option -g pane-base-index 1
 tmux set-option -g renumber-windows on
+tmux list-sessions -F '#{session_name}' 2>/dev/null | while IFS= read -r session_name; do
+	tmux move-window -r -t "${session_name}:" 2>/dev/null || true
+done
 tmux set-option -g history-limit 50000
-tmux set-option -g escape-time 0
+tmux set-option -sg escape-time 0
 tmux set-option -g focus-events on
 tmux set-option -g set-clipboard on
 tmux set-option -g allow-passthrough on
@@ -79,7 +85,6 @@ tmux set-window-option -g aggressive-resize on
 tmux set-option -g detach-on-destroy off
 tmux set-option -g extended-keys on
 tmux set-option -g extended-keys-format csi-u
-tmux set-option -sg escape-time 10
 
 tmux set-window-option -g automatic-rename on
 tmux set-window-option -g automatic-rename-format '#{b:pane_current_path}'

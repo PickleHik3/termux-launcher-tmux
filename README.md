@@ -43,6 +43,9 @@ The helper commands are documented in the Termux Launcher [tmux status setup](ht
 Set any of these before the TPM line in `~/.tmux.conf`, then reload tmux.
 
 ```tmux
+# Theme defaults to "rounded". Use "sleek" for the smux-inspired minimal bar.
+set -g @termux-launcher-tmux-theme rounded
+
 # Core widgets default to "on".
 set -g @termux-launcher-tmux-system-widgets on
 set -g @termux-launcher-tmux-weather on
@@ -64,6 +67,12 @@ Turn widgets off individually:
 set -g @termux-launcher-tmux-system-widgets off
 set -g @termux-launcher-tmux-weather off
 set -g @termux-launcher-tmux-now-playing off
+```
+
+Switch to the smux-inspired theme:
+
+```tmux
+set -g @termux-launcher-tmux-theme sleek
 ```
 
 Show the weather condition text:
@@ -151,9 +160,10 @@ Change the app ids to match your `launcherctl apps` output.
 
 - Installs the Termux Launcher tmux keybinds and options: prefix, pane/window/session navigation, copy-mode keys, help popup, and `F12` settings reload.
 - Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
-- Shows a compact two-row tmux status bar for Android screens.
-- Shows session, prefix, and copy mode as elevated Material-style chips on the left.
-- Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in a rounded right-side chip.
+- Defaults to the `rounded` theme, a compact two-row tmux status bar for Android screens.
+- Provides a `sleek` theme inspired by smux: one top status row plus a labeled pane-border row, default terminal background, simple `#I:#W` windows, and Material-colored text widgets without chip backgrounds.
+- In `rounded`, shows session, prefix, and copy mode as elevated Material-style chips on the left.
+- Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in the active theme style.
 - Can optionally add storage, battery, CPU temperature, and battery temperature widgets.
 - Shows windows from the left edge of the second row, with the focused window showing the active process name.
 - Shows the current `kew` track on the far right of the second row only while playback is active.
