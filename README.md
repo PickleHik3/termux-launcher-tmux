@@ -39,7 +39,9 @@ tmux source-file ~/.tmux.conf
   - `launcher-weather-widget`
   - `kew-now-playing`
 
-The helper commands are documented in the Termux Launcher [tmux status setup](https://github.com/PickleHik3/termux-launcher/blob/dev/docs/en/Launcher_Tmux_Status_Setup.md).
+The helper commands are documented in the Termux Launcher [tmux status setup](https://github.com/PickleHik3/termux-launcher/blob/main/docs/en/Launcher_Tmux_Status_Setup.md).
+
+After updating the Termux Launcher APK, refresh launcher-owned helper scripts with `launcherctl update-scripts` so tmux widgets use the latest `launcherctl resources` path.
 
 ## User Options
 
