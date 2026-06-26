@@ -49,7 +49,7 @@ session_bg=$primary
 session_fg=$on_primary
 prefix_fg=$primary
 copy_fg=$terminal_yellow
-window_inactive_fg=$tertiary
+window_inactive_fg=$muted
 window_inactive_bg=$bar_bg
 window_active_fg=$tertiary
 window_active_bg=$bar_bg
@@ -65,34 +65,30 @@ weather_color=$tertiary
 zoom_color=$terminal_magenta
 tai_color=$terminal_cyan
 
-color_mode="$(tmux show-option -gqv @termux-launcher-tmux-color-mode 2>/dev/null || printf 'default')"
-case "$color_mode" in
-	pure-m3|pure_m3|purem3)
-		muted=$on_surface_variant
-		border=$tertiary
-		separator_color=$secondary
-		text=$on_surface
-		subtle=$on_surface_variant
-		session_bg=$primary
-		session_fg=$on_primary
-		prefix_fg=$secondary
-		copy_fg=$tertiary
-		window_active_fg=$on_secondary
-		window_active_bg=$secondary
-		window_inactive_fg=$tertiary
-		window_index_fg=$secondary
-		window_attention_fg=$terminal_yellow
-		window_attention_bg=$surface_variant
-		cpu_color=$primary
-		ram_color=$terminal_green
-		storage_color=$terminal_blue
-		battery_color=$terminal_cyan
-		temperature_color=$terminal_yellow
-		weather_color=$tertiary
-		zoom_color=$error
-		tai_color=$secondary
-		;;
-esac
+muted=$on_surface_variant
+border=$tertiary
+separator_color=$secondary
+text=$on_surface
+subtle=$on_surface_variant
+session_bg=$primary
+session_fg=$on_primary
+prefix_fg=$secondary
+copy_fg=$tertiary
+window_active_fg=$on_secondary
+window_active_bg=$secondary
+window_inactive_fg=$tertiary
+window_inactive_bg=$surface_variant
+window_index_fg=$secondary
+window_attention_fg=$terminal_yellow
+window_attention_bg=$surface_variant
+cpu_color=$primary
+ram_color=$terminal_green
+storage_color=$terminal_blue
+battery_color=$terminal_cyan
+temperature_color=$terminal_yellow
+weather_color=$tertiary
+zoom_color=$error
+tai_color=$secondary
 
 option_on() {
 	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
@@ -206,9 +202,9 @@ tmux set-window-option -g window-status-bell-style "fg=${error},bg=${bar_bg},bol
 
 tmux set-option -g pane-border-style "fg=#{?#{==:#{client_key_table},prefix},${prefix_fg},${border}}"
 tmux set-option -g pane-active-border-style "fg=#{?pane_in_mode,${copy_fg},#{?#{==:#{client_key_table},prefix},${prefix_fg},${border}}}"
-tmux set-option -g pane-border-lines single
+tmux set-option -g pane-border-lines heavy
 tmux set-option -g pane-border-indicators off
-tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX , ${pane_path_arrow} #{?@name,#{@name},#{b:pane_current_path}} }}"
+tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX ,#[fg=${primary}] ${pane_path_arrow} #{?@name,#{@name},#{b:pane_current_path}} }}"
 tmux set-option -g pane-border-status "$pane_border_status"
 tmux set-option -g display-panes-colour "$muted"
 tmux set-option -g display-panes-active-colour "$tertiary"

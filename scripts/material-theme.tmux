@@ -7,7 +7,7 @@ theme="$(tmux show-option -gqv @termux-launcher-tmux-theme 2>/dev/null || printf
 [ -n "$theme" ] || theme=rounded
 
 case "$theme" in
-	rounded|sleek) ;;
+	rounded|sleek|purem3) ;;
 	*) theme=rounded ;;
 esac
 

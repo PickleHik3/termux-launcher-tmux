@@ -48,8 +48,11 @@ After updating the Termux Launcher APK, refresh launcher-owned helper scripts wi
 Set any of these before the TPM line in `~/.tmux.conf`, then reload tmux.
 
 ```tmux
-# Theme defaults to "rounded". Use "sleek" for the smux-inspired minimal bar.
+# Theme defaults to "rounded". Use "sleek" or "purem3" for minimal bars.
 set -g @termux-launcher-tmux-theme rounded
+
+# Color mode defaults to "default". Use "pure-m3" for stricter Material 3 roles.
+set -g @termux-launcher-tmux-color-mode default
 
 # Status bar position defaults to "top". Use "bottom" to put it below panes.
 set -g @termux-launcher-tmux-status-position top
@@ -81,6 +84,13 @@ Switch to the smux-inspired theme:
 
 ```tmux
 set -g @termux-launcher-tmux-theme sleek
+set -g @termux-launcher-tmux-theme purem3
+```
+
+Switch rounded or sleek to stricter Material 3 colors:
+
+```tmux
+set -g @termux-launcher-tmux-color-mode pure-m3
 ```
 
 Move either theme's status bar to the bottom:
@@ -129,6 +139,10 @@ The theme option is global:
 ```tmux
 set -g @termux-launcher-tmux-theme sleek
 ```
+
+### Purem3
+
+`purem3` is the current `sleek` layout with `pure-m3` colors baked in as a standalone theme.
 
 ## Controls
 
@@ -201,7 +215,9 @@ Change the app ids to match your `launcherctl apps` output.
 - Installs the Termux Launcher tmux keybinds and options: prefix, pane/window/session navigation, copy-mode keys, help popup, and `F12` settings reload.
 - Uses Termux Launcher's Material color exports and maps them to Material-style roles: neutral surfaces for structure, primary for focus, secondary/tertiary for supporting signal, and error only for alerts.
 - Defaults to the `rounded` theme, a compact two-status-row Material chip theme for Android screens.
+- Provides a `pure-m3` color mode for both `rounded` and `sleek` without changing their layouts or surfaces.
 - Provides a `sleek` theme inspired by smux: one top status row plus a labeled pane-border row, default terminal background, command-based window labels, a solid Material session chip, and Material-colored text widgets without chip backgrounds.
+- Provides a standalone `purem3` theme with the `sleek` layout and accent-forward Material 3 colors.
 - Keeps `rounded` as a two-status-row theme and `sleek` as a one-status-row plus pane-border theme.
 - Shows CPU, RAM, optional resource widgets, zoom state, and compact or condition weather in the active theme style.
 - Can optionally add storage, battery, CPU temperature, and battery temperature widgets.

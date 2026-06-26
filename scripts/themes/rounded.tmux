@@ -32,7 +32,9 @@ outline_variant=${TERMUX_MATERIAL_OUTLINE_VARIANT:-$surface_variant}
 primary=${TERMUX_MATERIAL_PRIMARY:-#8CD5B3}
 on_primary=${TERMUX_MATERIAL_ON_PRIMARY:-#003826}
 secondary=${TERMUX_MATERIAL_SECONDARY:-#B3CCBE}
+on_secondary=${TERMUX_MATERIAL_ON_SECONDARY:-$surface}
 tertiary=${TERMUX_MATERIAL_TERTIARY:-#A5CCDF}
+on_tertiary=${TERMUX_MATERIAL_ON_TERTIARY:-$surface}
 error=${TERMUX_MATERIAL_ERROR:-#F2B8B5}
 error_container=${TERMUX_MATERIAL_ERROR_CONTAINER:-$surface_variant}
 terminal_green=${TERMUX_MATERIAL_TERMINAL_COLOR10:-$primary}
@@ -53,9 +55,12 @@ copy_bg=$terminal_yellow
 copy_fg=$surface
 session_bg=$primary
 session_fg=$on_primary
-window_inactive_fg=$subtle_fg
-window_active_fg=$primary
+window_inactive_fg=$tertiary
+window_inactive_bg=$chip_bg
+window_active_fg=$on_primary
+window_active_bg=$primary
 window_attention_fg=$terminal_yellow
+window_attention_bg=$bar_bg
 window_index_fg=$secondary
 cpu_color=$primary
 ram_color=$terminal_cyan
@@ -65,6 +70,34 @@ temperature_color=$terminal_yellow
 weather_color=$tertiary
 zoom_color=$terminal_magenta
 tai_color=$terminal_cyan
+
+color_mode="$(tmux show-option -gqv @termux-launcher-tmux-color-mode 2>/dev/null || printf 'default')"
+case "$color_mode" in
+	pure-m3|pure_m3|purem3)
+		subtle_fg=$secondary
+		separator_color=$secondary
+		prefix_bg=$secondary
+		prefix_fg=$on_secondary
+		copy_bg=$tertiary
+		copy_fg=$on_tertiary
+		session_bg=$primary
+		session_fg=$on_primary
+		window_inactive_fg=$tertiary
+		window_active_fg=$on_primary
+		window_active_bg=$primary
+		window_attention_fg=$terminal_yellow
+		window_attention_bg=$surface_variant
+		window_index_fg=$secondary
+		cpu_color=$primary
+		ram_color=$terminal_green
+		storage_color=$terminal_blue
+		battery_color=$terminal_cyan
+		temperature_color=$terminal_yellow
+		weather_color=$tertiary
+		zoom_color=$error
+		tai_color=$secondary
+		;;
+esac
 
 option_on() {
 	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
@@ -162,7 +195,7 @@ tmux set-option -g @termux-launcher-tmux-left-copy " #[fg=${copy_bg},bg=${bar_bg
 tmux set-option -g status-left "#{?pane_in_mode,#{E:@termux-launcher-tmux-left-copy},#{?client_prefix,#{E:@termux-launcher-tmux-left-prefix},#{E:@termux-launcher-tmux-left-normal}}}"
 tmux set-option -g status-right "#[fg=${zoom_color},bg=${bar_bg},bold]#{?window_zoomed_flag, ZOOM ,}${right_pill}"
 tmux set-option -g status-format[0] "#[align=left range=left bg=${bar_bg}]#{T:status-left}#[align=right range=right bg=${bar_bg}]#{T:status-right}#[norange]"
-tmux set-option -g status-format[1] "#[list=on align=left bg=${bar_bg}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]${now_playing}"
+tmux set-option -g status-format[1] "#[list=on align=centre bg=${bar_bg}]#[list=left-marker]<#[list=right-marker]>#[list=on]#{W:#[range=window|#{window_index}]#{T:window-status-format}#[norange],#[range=window|#{window_index} list=focus]#{T:window-status-current-format}#[norange]}#[nolist]${now_playing}"
 tmux set-option -gu status-format[2]
 tmux set-option -u status-format[2] 2>/dev/null || true
 tmux set-option -g status 2
@@ -173,9 +206,9 @@ tmux unbind-key -n MouseUp1Status 2>/dev/null || true
 tmux unbind-key -n MouseDown1StatusRight 2>/dev/null || true
 tmux unbind-key -n MouseUp1StatusRight 2>/dev/null || true
 
-tmux set-window-option -g window-status-format "#[fg=${window_index_fg},bg=${bar_bg},nobold,noitalics,nounderscore] #I #[fg=${window_inactive_fg},bg=${bar_bg},nobold]#W "
-tmux set-window-option -g window-status-current-format "#[fg=${window_active_fg},bg=${bar_bg},bold,noitalics,nounderscore] ▸ #I #{pane_current_command} "
-tmux set-window-option -g window-status-activity-style "fg=${window_attention_fg},bg=${bar_bg},nobold"
+tmux set-window-option -g window-status-format " #[fg=${window_inactive_bg},bg=${bar_bg},nobold]#[fg=${window_index_fg},bg=${window_inactive_bg},nobold,noitalics,nounderscore] #I #[fg=${window_inactive_fg},bg=${window_inactive_bg},nobold]#W #[fg=${window_inactive_bg},bg=${bar_bg}]"
+tmux set-window-option -g window-status-current-format " #[fg=${window_active_bg},bg=${bar_bg},nobold]#[fg=${window_active_fg},bg=${window_active_bg},bold,noitalics,nounderscore] #I #W #[fg=${window_active_bg},bg=${bar_bg},nobold]"
+tmux set-window-option -g window-status-activity-style "fg=${window_attention_fg},bg=${window_attention_bg},nobold"
 tmux set-window-option -g window-status-bell-style "fg=${error},bg=${error_container},nobold"
 
 tmux set-option -g pane-border-style "fg=${outline_variant}"
