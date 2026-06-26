@@ -51,6 +51,9 @@ Set any of these before the TPM line in `~/.tmux.conf`, then reload tmux.
 # Theme defaults to "rounded". Use "sleek" for the smux-inspired minimal bar.
 set -g @termux-launcher-tmux-theme rounded
 
+# Status bar position defaults to "top". Use "bottom" to put it below panes.
+set -g @termux-launcher-tmux-status-position top
+
 # Core widgets default to "on".
 set -g @termux-launcher-tmux-system-widgets on
 set -g @termux-launcher-tmux-weather on
@@ -80,6 +83,12 @@ Switch to the smux-inspired theme:
 set -g @termux-launcher-tmux-theme sleek
 ```
 
+Move either theme's status bar to the bottom:
+
+```tmux
+set -g @termux-launcher-tmux-status-position bottom
+```
+
 Show the weather condition text:
 
 ```tmux
@@ -105,12 +114,14 @@ The extra widgets read `launcherctl resources`.
 
 ### Sleek
 
-`sleek` is inspired by smux. It uses one top status row plus a labeled pane-border row:
+`sleek` is inspired by smux. It uses one status row plus a labeled pane-border row:
 
 - the session widget is a solid Material-colored chip
 - windows show the active pane command, such as `1:fish`, instead of repeating the current path
-- CPU, RAM, weather, optional resource widgets, zoom, and now playing stay on the top-right as colored text without chip backgrounds
+- CPU, RAM, weather, optional resource widgets, zoom, and now playing stay on the status-right as colored text without chip backgrounds
 - the pane-border label shows the current pane path/name in normal mode, `PRFX` in prefix mode, and `COPY` in copy mode
+- the pane-border row follows the status position, so a bottom status bar keeps a divider between the terminal and tmux status widgets
+- the current pane path/name arrow points down for a top status bar and up for a bottom status bar
 - active windows, borders, prefix/copy indicators, widgets, copy mode, and messages use Material color roles from the current wallpaper
 
 The theme option is global:

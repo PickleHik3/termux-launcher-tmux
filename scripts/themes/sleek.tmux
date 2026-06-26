@@ -58,6 +58,7 @@ battery_color=$terminal_cyan
 temperature_color=$terminal_yellow
 weather_color=$tertiary
 zoom_color=$terminal_magenta
+tai_color=$terminal_cyan
 
 option_on() {
 	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
@@ -66,9 +67,24 @@ option_on() {
 	esac
 }
 
+status_position="$(tmux show-option -gqv @termux-launcher-tmux-status-position 2>/dev/null || printf 'top')"
+case "$status_position" in
+	bottom|BOTTOM) status_position=bottom ;;
+	top|TOP|'') status_position=top ;;
+	*) status_position=top ;;
+esac
+
+pane_path_arrow='↓'
+pane_border_status=top
+if [ "$status_position" = bottom ]; then
+	pane_path_arrow='↑'
+	pane_border_status=bottom
+fi
+
 weather_widget=''
 now_playing=''
 resource_widgets=''
+tai_widget=''
 show_system_widgets=off
 show_storage_widget=off
 show_battery_widget=off
@@ -116,11 +132,19 @@ if [ -n "$right_widgets" ] && [ -n "$weather_widget" ]; then
 else
 	right_widgets="${right_widgets}${weather_widget}"
 fi
+
+if option_on @termux-launcher-tmux-tai on; then
+	tai_has_next=off
+	[ -n "$right_widgets" ] && tai_has_next=on
+	tai_widget="#(TERMUX_LAUNCHER_TMUX_WIDGET_BG='${bar_bg}' TERMUX_LAUNCHER_TMUX_TAI_FG='${tai_color}' TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_TAI_TRAILING_SEPARATOR='${tai_has_next}' ${theme_dir}/tai-widget | tr -d '\n')"
+	right_widgets="${tai_widget}${right_widgets}"
+fi
+
 right_widgets="${right_widgets}${now_playing}"
 
 tmux set-option -g status on
 tmux set-option status on
-tmux set-option -g status-position top
+tmux set-option -g status-position "$status_position"
 tmux set-option -g status-interval 5
 tmux set-option -g status-style "bg=${bar_bg},fg=${muted}"
 tmux set-option -g status-left-length 12
@@ -150,8 +174,8 @@ tmux set-option -g pane-border-style "fg=#{?#{==:#{client_key_table},prefix},${p
 tmux set-option -g pane-active-border-style "fg=#{?pane_in_mode,${copy_fg},#{?#{==:#{client_key_table},prefix},${prefix_fg},${border}}}"
 tmux set-option -g pane-border-lines heavy
 tmux set-option -g pane-border-indicators off
-tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX , ↓ #{?@name,#{@name},#{b:pane_current_path}} }}"
-tmux set-option -g pane-border-status top
+tmux set-option -g pane-border-format "#{?pane_in_mode, COPY ,#{?#{==:#{client_key_table},prefix}, PRFX , ${pane_path_arrow} #{?@name,#{@name},#{b:pane_current_path}} }}"
+tmux set-option -g pane-border-status "$pane_border_status"
 tmux set-option -g display-panes-colour "$muted"
 tmux set-option -g display-panes-active-colour "$tertiary"
 

@@ -1,0 +1,113 @@
+#!/usr/bin/env sh
+set -eu
+
+PATH="/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin:${PATH:-}"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/termux-launcher-tmux"
+state_file="$cache_dir/tai-widget-state"
+unloaded_timeout="${TERMUX_LAUNCHER_TMUX_TAI_UNLOADED_TIMEOUT:-300}"
+
+loaded_icon="${TERMUX_LAUNCHER_TMUX_TAI_LOADED_ICON:-󱜙}"
+unloaded_icon="${TERMUX_LAUNCHER_TMUX_TAI_UNLOADED_ICON:-󱚡}"
+fg="${TERMUX_LAUNCHER_TMUX_TAI_FG:-default}"
+bg="${TERMUX_LAUNCHER_TMUX_WIDGET_BG:-default}"
+sep_fg="${TERMUX_LAUNCHER_TMUX_SEPARATOR_FG:-default}"
+trailing_separator="${TERMUX_LAUNCHER_TMUX_TAI_TRAILING_SEPARATOR:-off}"
+
+command -v tai >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+mkdir -p "$cache_dir"
+
+now_epoch() { date +%s; }
+
+read_state() {
+	[ -r "$state_file" ] || return 1
+	# shellcheck disable=SC2162
+	read state ts < "$state_file" || return 1
+	case "${state:-}" in
+		loaded|unloaded) ;;
+		*) return 1 ;;
+	esac
+	case "${ts:-}" in
+		*[!0-9]*|'') return 1 ;;
+	esac
+	printf '%s %s\n' "$state" "$ts"
+}
+
+write_state() {
+	printf '%s %s\n' "$1" "$2" > "$state_file"
+}
+
+format_duration() {
+	ms="${1:-0}"
+	awk -v ms="$ms" 'BEGIN {
+		seconds = int((ms + 999) / 1000);
+		if (seconds <= 0) exit 0;
+		minutes = int(seconds / 60);
+		if (minutes > 0) {
+			printf "%dm", minutes;
+		} else {
+			printf "%ds", seconds;
+		}
+	}'
+}
+
+append_separator() {
+	case "$trailing_separator" in
+		on|ON|true|TRUE|1|yes|YES)
+			printf '#[fg=%s,bg=%s] · ' "$sep_fg" "$bg"
+			;;
+	esac
+}
+
+print_segment() {
+	icon="$1"
+	timer="${2:-}"
+	if [ -n "$timer" ]; then
+		printf '#[fg=%s,bg=%s]%s %s' "$fg" "$bg" "$icon" "$timer"
+	else
+		printf '#[fg=%s,bg=%s]%s' "$fg" "$bg" "$icon"
+	fi
+	append_separator
+}
+
+json="$(tai --json runtime 2>/dev/null || true)"
+[ -n "$json" ] || exit 0
+
+loaded="$(printf '%s' "$json" | jq -r '.runtime.loaded // false' 2>/dev/null || printf 'false')"
+now="$(now_epoch)"
+
+if [ "$loaded" = "true" ]; then
+	remaining_ms="$(printf '%s' "$json" | jq -r '
+		(.runtime.keepWarmRemainingMs // 0) as $keep
+		| (.runtime.idleUnloadRemainingMs // 0) as $idle
+		| if $keep > 0 then $keep elif $idle > 0 then $idle else 0 end
+	' 2>/dev/null || printf '0')"
+	timer="$(format_duration "$remaining_ms" 2>/dev/null || true)"
+	write_state loaded "$now"
+	print_segment "$loaded_icon" "$timer"
+	exit 0
+fi
+
+previous_state=""
+previous_ts=0
+if previous="$(read_state 2>/dev/null || true)" && [ -n "$previous" ]; then
+	previous_state="${previous%% *}"
+	previous_ts="${previous##* }"
+fi
+
+if [ "$previous_state" = "loaded" ]; then
+	write_state unloaded "$now"
+	print_segment "$unloaded_icon"
+	exit 0
+fi
+
+if [ "$previous_state" = "unloaded" ]; then
+	age="$((now - previous_ts))"
+	if [ "$age" -lt "$unloaded_timeout" ]; then
+		print_segment "$unloaded_icon"
+	fi
+	exit 0
+fi
+
+write_state unloaded "$now"
+print_segment "$unloaded_icon"

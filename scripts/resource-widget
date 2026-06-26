@@ -37,6 +37,9 @@ refresh_cache() {
 load_json() {
 	age="$(file_age "$cache_file")"
 	if [ "$age" -gt "$ttl" ]; then
+		if [ -d "$lock_dir" ] && [ "$(file_age "$lock_dir")" -gt "$stale_ttl" ]; then
+			rmdir "$lock_dir" 2>/dev/null || true
+		fi
 		if mkdir "$lock_dir" 2>/dev/null; then
 			refresh_cache || true
 			rmdir "$lock_dir" 2>/dev/null || true

@@ -64,6 +64,7 @@ battery_color=$terminal_green
 temperature_color=$terminal_yellow
 weather_color=$tertiary
 zoom_color=$terminal_magenta
+tai_color=$terminal_cyan
 
 option_on() {
 	case "$(tmux show-option -gqv "$1" 2>/dev/null || printf '%s' "$2")" in
@@ -72,10 +73,18 @@ option_on() {
 	esac
 }
 
+status_position="$(tmux show-option -gqv @termux-launcher-tmux-status-position 2>/dev/null || printf 'top')"
+case "$status_position" in
+	bottom|BOTTOM) status_position=bottom ;;
+	top|TOP|'') status_position=top ;;
+	*) status_position=top ;;
+esac
+
 system_widgets=''
 weather_widget=''
 now_playing=''
 resource_widgets=''
+tai_widget=''
 show_system_widgets=off
 show_storage_widget=off
 show_battery_widget=off
@@ -123,6 +132,13 @@ else
 	right_widgets="${resource_widgets}${weather_widget}"
 fi
 
+if option_on @termux-launcher-tmux-tai on; then
+	tai_has_next=off
+	[ -n "$right_widgets" ] && tai_has_next=on
+	tai_widget="#(TERMUX_LAUNCHER_TMUX_WIDGET_BG='${chip_bg}' TERMUX_LAUNCHER_TMUX_TAI_FG='${tai_color}' TERMUX_LAUNCHER_TMUX_SEPARATOR_FG='${separator_color}' TERMUX_LAUNCHER_TMUX_TAI_TRAILING_SEPARATOR='${tai_has_next}' ${theme_dir}/tai-widget | tr -d '\n')"
+	right_widgets="${tai_widget}${right_widgets}"
+fi
+
 if [ -n "$right_widgets" ]; then
 	right_pill="#[fg=${chip_bg},bg=${bar_bg},nobold]#[fg=${on_surface},bg=${chip_bg},nobold] ${right_widgets} #[fg=${chip_bg},bg=${bar_bg},nobold] "
 else
@@ -130,7 +146,7 @@ else
 fi
 
 tmux set-option -g status-style "bg=${bar_bg},fg=${on_surface}"
-tmux set-option -g status-position top
+tmux set-option -g status-position "$status_position"
 tmux set-option -g status-interval 5
 tmux set-option -g mouse on
 tmux set-option -g base-index 1
