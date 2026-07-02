@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/system/bin/sh
 
 CURRENT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 

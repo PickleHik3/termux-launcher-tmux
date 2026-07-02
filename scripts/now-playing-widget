@@ -1,8 +1,8 @@
-#!/usr/bin/env sh
+#!/system/bin/sh
 set -u
 
-PATH="/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin:${PATH:-}"
-tmp_dir="${TMPDIR:-/data/data/com.termux/files/usr/tmp}"
+PATH="${PREFIX:?PREFIX is not set}/bin:/system/bin:/system/xbin:${PATH:-}"
+tmp_dir="${TMPDIR:-$PREFIX/tmp}"
 
 command -v kew-now-playing >/dev/null 2>&1 || exit 0
 
@@ -11,7 +11,7 @@ if command -v pgrep >/dev/null 2>&1 && ! pgrep -x kew >/dev/null 2>&1; then
 fi
 
 find_kew_socket() {
-	for dir in "$tmp_dir" "/data/data/com.termux/files/usr/tmp" "/data/data/com.termux/files/usr/var/run" "$HOME/.tmp" "$HOME/.cache"; do
+	for dir in "$tmp_dir" "$PREFIX/tmp" "$PREFIX/var/run" "$HOME/.tmp" "$HOME/.cache"; do
 		[ -d "$dir" ] || continue
 		for sock in "$dir"/dbus-*; do
 			[ -S "$sock" ] || continue

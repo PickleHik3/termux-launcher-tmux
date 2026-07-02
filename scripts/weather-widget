@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/system/bin/sh
 set -u
 
 mode="${TERMUX_LAUNCHER_TMUX_WEATHER_MODE:-compact}"

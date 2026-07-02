@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/system/bin/sh
 set -eu
 
-PATH="/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin:${PATH:-}"
+PATH="${PREFIX:?PREFIX is not set}/bin:/system/bin:/system/xbin:${PATH:-}"
 mode="${1:-right}"
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/termux-launcher-tmux"
 cache_file="$cache_dir/resources.json"

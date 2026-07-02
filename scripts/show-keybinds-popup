@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/system/bin/sh
 set -eu
 
 [ -n "${TMUX:-}" ] || exit 0
